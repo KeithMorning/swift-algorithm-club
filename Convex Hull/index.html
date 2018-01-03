@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<head>
+  <title>Convex Hull</title>
+  <link rel="stylesheet" type="text/css" href="../github-light.css">
+</head>
+<body>
+  <div id="container"><h1>Convex Hull</h1>
+<p>There are multiple Convex Hull algorithms. This particular implementation uses the Quickhull algorithm.</p>
+<p>Given a group of points on a plane. The Convex Hull algorithm calculates the shape (made up from the points itself) containing all these points. It can also be used on a collection of points of different dimensions. This implementation however covers points on a plane. It essentially calculates the lines between points which together contain all points.</p>
+<h2>Quickhull</h2>
+<p>The quickhull algorithm works as follows:<br>
+The algorithm takes an input of a collection of points. These points should be ordered on their x-coordinate value. We pick the two points A and B with the smallest(A) and the largest(B) x-coordinate. These of course have to be part of the hull. Imagine a line from point A to point B. All points to the right of this line are grouped in an array S1. Imagine now a line from point B to point A. (this is of course the same line as before just with opposite direction) Again all points to the right of this line are grouped in an array, S2 this time.<br>
+We now define the following recursive function:</p>
+<p><code>findHull(points: [CGPoint], p1: CGPoint, p2: CGPoint)</code></p>
+<pre><code>findHull(S1, A, B)
+findHull(S2, B, A)
+</code></pre>
+<p>What this function does is the following:</p>
+<ol>
+<li>If <code>points</code> is empty we return as there are no points to the right of our line to add to our hull.</li>
+<li>Draw a line from <code>p1</code> to <code>p2</code>.</li>
+<li>Find the point in <code>points</code> that is furthest away from this line. (<code>maxPoint</code>)</li>
+<li>Add <code>maxPoint</code> to the hull right after <code>p1</code>.</li>
+<li>Draw a line (<code>line1</code>) from <code>p1</code> to <code>maxPoint</code>.</li>
+<li>Draw a line (<code>line2</code>) from <code>maxPoint</code> to <code>p2</code>. (These lines now form a triangle)</li>
+<li>All points within this triangle are of course not part of the hull and thus can be ignored. We check which points in <code>points</code> are to the right of <code>line1</code> these are grouped in an array <code>s1</code>.</li>
+<li>All points that are to the right of <code>line2</code> are grouped in an array <code>s2</code>. Note that there are no points that are both to the right of <code>line1</code> and <code>line2</code> as then <code>maxPoint</code> wouldn't be the point furthest away from our initial line between <code>p1</code> and <code>p2</code>.</li>
+<li>We call <code>findHull(_, _, _)</code> again on our new groups of points to find more hull points.</li>
+</ol>
+<pre><code>findHull(s1, p1, maxPoint)
+findHull(s2, maxPoint, p2)
+</code></pre>
+<p>This eventually leaves us with an array of points describing the convex hull.</p>
+<h2>See also</h2>
+<p><a href="https://en.wikipedia.org/wiki/Convex_hull_algorithms" rel="nofollow">Convex Hull on Wikipedia</a></p>
+<p><em>Written for the Swift Algorithm Club by Jaap Wijnen.</em></p></div>
+</body>
+</html>

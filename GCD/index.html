@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<head>
+  <title>GCD</title>
+  <link rel="stylesheet" type="text/css" href="../github-light.css">
+</head>
+<body>
+  <div id="container"><h1>Greatest Common Divisor</h1>
+<p>The <em>greatest common divisor</em> (or Greatest Common Factor) of two numbers <code>a</code> and <code>b</code> is the largest positive integer that divides both <code>a</code> and <code>b</code> without a remainder.</p>
+<p>For example, <code>gcd(39, 52) = 13</code> because 13 divides 39 (<code>39/13 = 3</code>) as well as 52 (<code>52/13 = 4</code>). But there is no larger number than 13 that divides them both.</p>
+<p>You've probably had to learn about this in school at some point. :-)</p>
+<p>The laborious way to find the GCD of two numbers is to first figure out the factors of both numbers, then take the greatest number they have in common. The problem is that factoring numbers is quite difficult, especially when they get larger. (On the plus side, that difficulty is also what keeps your online payments secure.)</p>
+<p>There is a smarter way to calculate the GCD: Euclid's algorithm. The big idea here is that,</p>
+<pre><code>gcd(a, b) = gcd(b, a % b)
+</code></pre>
+<p>where <code>a % b</code> calculates the remainder of <code>a</code> divided by <code>b</code>.</p>
+<p>Here is an implementation of this idea in Swift:</p>
+<div class="highlight highlight-source-swift"><pre><span class="pl-k">func</span> <span class="pl-en">gcd</span>(<span class="pl-en">_</span> <span class="pl-smi">a</span>: <span class="pl-c1">Int</span>, <span class="pl-en">_</span> <span class="pl-smi">b</span>: <span class="pl-c1">Int</span>) <span class="pl-k">-&gt;</span> <span class="pl-c1">Int</span> {
+  <span class="pl-k">let</span> r <span class="pl-k">=</span> a <span class="pl-k">%</span> b
+  <span class="pl-k">if</span> r <span class="pl-k">!=</span> <span class="pl-c1">0</span> {
+    <span class="pl-k">return</span> <span class="pl-c1">gcd</span>(b, r)
+  } <span class="pl-k">else</span> {
+    <span class="pl-k">return</span> b
+  }
+}</pre></div>
+<p>Put it in a playground and try it out with these examples:</p>
+<div class="highlight highlight-source-swift"><pre><span class="pl-c1">gcd</span>(<span class="pl-c1">52</span>, <span class="pl-c1">39</span>)        <span class="pl-c"><span class="pl-c">//</span> 13</span>
+<span class="pl-c"></span><span class="pl-c1">gcd</span>(<span class="pl-c1">228</span>, <span class="pl-c1">36</span>)       <span class="pl-c"><span class="pl-c">//</span> 12</span>
+<span class="pl-c"></span><span class="pl-c1">gcd</span>(<span class="pl-c1">51357</span>, <span class="pl-c1">3819</span>)   <span class="pl-c"><span class="pl-c">//</span> 57</span></pre></div>
+<p>Let's step through the third example:</p>
+<pre><code>gcd(51357, 3819)
+</code></pre>
+<p>According to Euclid's rule, this is equivalent to,</p>
+<pre><code>gcd(3819, 51357 % 3819) = gcd(3819, 1710)
+</code></pre>
+<p>because the remainder of <code>51357 % 3819</code> is <code>1710</code>. If you work out this division you get <code>51357 = (13 * 3819) + 1710</code> but we only care about the remainder part.</p>
+<p>So <code>gcd(51357, 3819)</code> is the same as <code>gcd(3819, 1710)</code>. That's useful because we can keep simplifying:</p>
+<pre><code>gcd(3819, 1710) = gcd(1710, 3819 % 1710) = 
+gcd(1710, 399)  = gcd(399, 1710 % 399)   = 
+gcd(399, 114)   = gcd(114, 399 % 114)    = 
+gcd(114, 57)    = gcd(57, 114 % 57)      = 
+gcd(57, 0)
+</code></pre>
+<p>And now can't divide any further. The remainder of <code>114 / 57</code> is zero because <code>114 = 57 * 2</code> exactly. That means we've found the answer:</p>
+<pre><code>gcd(3819, 51357) = gcd(57, 0) = 57
+</code></pre>
+<p>So in each step of Euclid's algorithm the numbers become smaller and at some point it ends when one of them becomes zero.</p>
+<p>By the way, it's also possible that two numbers have a GCD of 1. They are said to be <em>relatively prime</em>. This happens when there is no number that divides them both, for example:</p>
+<div class="highlight highlight-source-swift"><pre><span class="pl-c1">gcd</span>(<span class="pl-c1">841</span>, <span class="pl-c1">299</span>)     <span class="pl-c"><span class="pl-c">//</span> 1</span></pre></div>
+<p>Here is a slightly different implementation of Euclid's algorithm. Unlike the first version this doesn't use recursion but only a basic <code>while</code> loop.</p>
+<div class="highlight highlight-source-swift"><pre><span class="pl-k">func</span> <span class="pl-en">gcd</span>(<span class="pl-en">_</span> <span class="pl-smi">m</span>: <span class="pl-c1">Int</span>, <span class="pl-en">_</span> <span class="pl-smi">n</span>: <span class="pl-c1">Int</span>) <span class="pl-k">-&gt;</span> <span class="pl-c1">Int</span> {
+  <span class="pl-k">var</span> a <span class="pl-k">=</span> <span class="pl-c1">0</span>
+  <span class="pl-k">var</span> b <span class="pl-k">=</span> <span class="pl-c1">max</span>(m, n)
+  <span class="pl-k">var</span> r <span class="pl-k">=</span> <span class="pl-c1">min</span>(m, n)
+
+  <span class="pl-k">while</span> r <span class="pl-k">!=</span> <span class="pl-c1">0</span> {
+    a <span class="pl-k">=</span> b
+    b <span class="pl-k">=</span> r
+    r <span class="pl-k">=</span> a <span class="pl-k">%</span> b
+  }
+  <span class="pl-k">return</span> b
+}</pre></div>
+<p>The <code>max()</code> and <code>min()</code> at the top of the function make sure we always divide the larger number by the smaller one.</p>
+<h2>Least Common Multiple</h2>
+<p>An idea related to the GCD is the <em>least common multiple</em> or LCM.</p>
+<p>The least common multiple of two numbers <code>a</code> and <code>b</code> is the smallest positive integer that is a multiple of both. In other words, the LCM is evenly divisible by <code>a</code> and <code>b</code>.</p>
+<p>For example: <code>lcm(2, 3) = 6</code> because 6 can be divided by 2 and also by 3.</p>
+<p>We can calculate the LCM using Euclid's algorithm too:</p>
+<pre><code>              a * b
+lcm(a, b) = ---------
+            gcd(a, b)
+</code></pre>
+<p>In code:</p>
+<div class="highlight highlight-source-swift"><pre><span class="pl-k">func</span> <span class="pl-en">lcm</span>(<span class="pl-en">_</span> <span class="pl-smi">m</span>: <span class="pl-c1">Int</span>, <span class="pl-en">_</span> <span class="pl-smi">n</span>: <span class="pl-c1">Int</span>) <span class="pl-k">-&gt;</span> <span class="pl-c1">Int</span> {
+  <span class="pl-k">return</span> m <span class="pl-k">/</span> <span class="pl-c1">gcd</span>(m, n) <span class="pl-k">*</span> n
+}</pre></div>
+<p>And to try it out in a playground:</p>
+<div class="highlight highlight-source-swift"><pre><span class="pl-c1">lcm</span>(<span class="pl-c1">10</span>, <span class="pl-c1">8</span>)    <span class="pl-c"><span class="pl-c">//</span> 40</span></pre></div>
+<p>You probably won't need to use the GCD or LCM in any real-world problems, but it's cool to play around with this ancient algorithm. It was first described by Euclid in his <a href="http://publicdomainreview.org/collections/the-first-six-books-of-the-elements-of-euclid-1847/" rel="nofollow">Elements</a> around 300 BC. Rumor has it that he discovered this algorithm while he was hacking on his Commodore 64.</p>
+<p><em>Written for Swift Algorithm Club by Matthijs Hollemans</em></p></div>
+</body>
+</html>
