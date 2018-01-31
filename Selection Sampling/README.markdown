@@ -2,22 +2,20 @@
 
 目标：从 *n* 个集合的数组中随机选出 *k* 个元素。
 
-Let's say you have a deck of 52 playing cards and you need to draw 10 cards at random. This algorithm lets you do that.
-
 比如需要从 52 张桌牌中随机抽出 10 张牌，这个算法就可以解决。
 
 代码如下：
 
 ```swift
 func select<T>(from a: [T], count k: Int) -> [T] {
-var a = a
-for i in 0..<k {
-let r = random(min: i, max: a.count - 1)
-if i != r {
-swap(&a[i], &a[r])
-}
-}
-return Array(a[0..<k])
+  var a = a
+  for i in 0..<k {
+    let r = random(min: i, max: a.count - 1)
+    if i != r {
+      swap(&a[i], &a[r])
+    }
+  }
+  return Array(a[0..<k])
 }
 ```
 
@@ -25,16 +23,16 @@ return Array(a[0..<k])
 
 举例说明一下：
 
-[ "a", "b", "c", "d", "e", "f", "g" ]
+	[ "a", "b", "c", "d", "e", "f", "g" ]
 比如需要取出三个元素， k = 3。在循环中 i 初始值为 0 并指向 "a"。
 
-[ "a", "b", "c", "d", "e", "f", "g" ]
-i
+	[ "a", "b", "c", "d", "e", "f", "g" ]
+	   i
 
 在 i 和 a.count （数组的大小）之间随机产生一个数，假设随机数为 4 ，交换 "a" 和 "e", 然后增加 i 值：
 
-[ "e" | "b", "c", "d", "a", "f", "g" ]
-i
+	[ "e" | "b", "c", "d", "a", "f", "g" ]
+	         i
 
 | 符号用来分割来两个区域。 “e” 是第一个被选中的元素，在 | 右边的元素重新来随机选择。
 
@@ -42,149 +40,137 @@ i
 
 假设随机数为 6，交换 "b" 和 "g":
 
-[ "e" , "g" | "c", "d", "a", "f", "b" ]
-i
+	[ "e" , "g" | "c", "d", "a", "f", "b" ]
+	               i
 
-在随机获得一个数，假设这个值又为 4，交换 "c" 和 "a" 后最终得到了结果：
+在随机获得一个数，假设这个值又为 4，交换 "c" 和 "a" 后最终得到了结果： 
 
-[ "e", "g", "a" | "d", "c", "f", "b" ]
+	[ "e", "g", "a" | "d", "c", "f", "b" ]
 简单吧，少年！这个函数的复杂度为 **O(k)**，因为当我们选中 *k* 个元素后就结束了：
 
 下面是另一个算法，又称“蓄水池取样”：
 
 ```swift
 func reservoirSample<T>(from a: [T], count k: Int) -> [T] {
-precondition(a.count >= k)
+  precondition(a.count >= k)
 
-var result = [T]()      // 1
-for i in 0..<k {
-result.append(a[i])
-}
+  var result = [T]()      // 1
+  for i in 0..<k {
+    result.append(a[i])
+  }
 
-for i in k..<a.count {  // 2
-let j = random(min: 0, max: i)
-if j < k {
-result[j] = a[i]
-}
-}
-return result
+  for i in k..<a.count {  // 2
+    let j = random(min: 0, max: i)
+    if j < k {
+      result[j] = a[i]
+    }
+  }
+  return result
 }
 ```
 
 过程分成两步：
 
-1. Fill the `result` array with the first `k` elements from the original array. This is called the "reservoir".
-2. 先通过数组中前 *k* 个元素填充 result。这个过程称为 “蓄水”。
-3. Randomly replace elements in the reservoir with elements from the remaining pool.
+1. 先通过数组中前 *k* 个元素填充 result。这个过程称为 “蓄水”。
+2. 随机取出剩余的 “水池” 中元素并代替当前水池中的元素。
 
-The performance of this algorithm is **O(n)**, so it's a little bit slower than the first algorithm. However, its big advantage is that it can be used for arrays that are too large to fit in memory, even if you don't know what the size of the array is (in Swift this might be something like a lazy generator that reads the elements from a file).
+这个算法的复杂度为 **O(n)** ，因此比第一个算法效率要低些。但是，它有一个很大的优势就是适用于非常大的数组甚至可能超出内存，再或者你根本不知道它有多大时（就像 Swift 的懒加载迭代器可以从文件中读取元素）。
 
-There is one downside to the previous two algorithms: they do not keep the elements in the original order. In the input array `"a"` came before `"e"` but now it's the other way around. If that is an issue for your app, you can't use this particular method.
+以上两个算法有一个缺点那就是：他们无法保持原有顺序，比如在输入数组中 `"a"` 是在 `"e"` 的前面，但是现在不一样了。对调用方法的 app 会有潜在的隐患，不要用这样方法。
 
-Here is an alternative approach that does keep the original order intact, but is a little more involved:
+这是另个一方法能够保持数组原始顺序，但是会稍微复杂一些：
 
 ```swift
 func select<T>(from a: [T], count requested: Int) -> [T] {
-var examined = 0
-var selected = 0
-var b = [T]()
+  var examined = 0
+  var selected = 0
+  var b = [T]()
+  
+  while selected < requested {                          // 1
+    let r = Double(arc4random()) / 0x100000000          // 2
+    
+    let leftToExamine = a.count - examined              // 3
+    let leftToAdd = requested - selected
 
-while selected < requested {                          // 1
-let r = Double(arc4random()) / 0x100000000          // 2
+    if Double(leftToExamine) * r < Double(leftToAdd) {  // 4
+      selected += 1
+      b.append(a[examined])
+    }
 
-let leftToExamine = a.count - examined              // 3
-let leftToAdd = requested - selected
-
-if Double(leftToExamine) * r < Double(leftToAdd) {  // 4
-selected += 1
-b.append(a[examined])
-}
-
-examined += 1
-}
-return b
+    examined += 1
+  }
+  return b
 }
 ```
 
-This algorithm uses probability to decide whether to include a number in the selection or not.
+这个算法使用概率决定是否要放入待选数组中。
 
-1. The loop steps through the array from beginning to end. It keeps going until we've selected *k* items from our set of *n*. Here, *k* is called `requested` and *n* is `a.count`.
+1. 循环遍历整个数组，直到从 `n` 个元素的集合中选出 `k` 个元素，这里 `k` 为 `requested`，`n` 为 `a.count`。
+2. 产生 0 ~ 1 之间一个随机数，即 `0.0 <= r < 1.0` 。随机数是左闭右开，为了保证不会取到 1， 这里把 `arc4random()` 值 除以 `0x100000000`，而不是常用的 `0xffffffff`。
+3. `leftToExamine` 表示还有多少元素没有查看，`leftToAdd` 表示还需要再选出多少个才能结束。
+4. 这是最神奇的一步，类似扔硬币一样，如果是正面就把当前元素放入待选中，如果是反面就跳过。
 
-2. Calculate a random number between 0 and 1. We want `0.0 <= r < 1.0`. The higher bound is exclusive; we never want it to be exactly 1. That's why we divide the result from `arc4random()` by `0x100000000` instead of the more usual `0xffffffff`.
+使用概率解决非常有趣吧！这个方法能够保证随机获得 *k* 个元素的数组。
 
-3. `leftToExamine` is how many items we still haven't looked at. `leftToAdd` is how many items we still need to select before we're done.
+一步一步演示如下，输入数组为：
 
-4. This is where the magic happens. Basically, we're flipping a coin. If it was heads, we add the current array element to the selection; if it was tails, we skip it.
+	[ "a", "b", "c", "d", "e", "f", "g" ]
+我们从 `"a"` 开始循环，随机值在 0 和 1 之间，假设为 0.841，在函数 `//4` 第四步的作用是把剩余元素的个数与随机值相乘。因为还需要随机取 7 个元素，结果如下：
 
-Interestingly enough, even though we use probability, this approach always guarantees that we end up with exactly *k* items in the output array.
+	7 * 0.841 = 5.887
+与需要选取的值的个数 3 作比较，由于 5.887 比 3 大，因此跳过 `"a“` ，并移到 `”b“`。 
 
-Let's walk through the same example again. The input array is:
+循环下一次随机值为 0.212，现在只有 6 个待选值，计算如下：
 
-[ "a", "b", "c", "d", "e", "f", "g" ]
+	6 * 0.212 = 1.272
+此值比 3 小，因此把 `”b“` 选中。这是第一个随机选取的值，还有两个值需要选取。
 
-The loop looks at each element in turn, so we start at `"a"`. We get a random number between 0 and 1, let's say it is 0.841. The formula at `// 4` multiplies the number of items left to examine with this random number. There are still 7 elements left to examine, so the result is:
+移至下一个元素 `"c"`，假设随机值为 0.264, 结果为：
 
-7 * 0.841 = 5.887
+	5 * 0.264 = 1.32
+只需要再选出两个元素，所以这个值需要小于 2，1.32正好小于 2， 所以 `"c"` 也成了选终止，目前选中的元素为 `["b", "c"]`。
 
-We compare this to 3 because we wanted to select 3 items. Since 5.887 is greater than 3, we skip `"a"` and move on to `"b"`.
+现在只需要再选一个元素，但是还剩余 4 个元素。假设随机值为 0.718，结果为：
 
-Again, we get a random number, let's say 0.212. Now there are only 6 elements left to examine, so the formula gives:
+	4 * 0.718 = 2.872
+因为上面值必须小于 1， 因此只有一个元素会被选中。上面值大于 1，因此需要跳过 `"d"`, 只剩下 3 个元素了还能在结束前选出来吗？
 
-6 * 0.212 = 1.272
+随机值为 0.346，计算如下：
 
-This *is* less than 3 and we add `"b"` to the selection. This is the first item we've selected, so two left to go.
+	3 * 0.346 = 1.038
+有点大了。。。我们跳过 `"e"` ，只剩下两个元素了。。。
 
-On to the next element, `"c"`. The random number is 0.264, giving the result:
+到现在就像掷硬币一样了，如果随机值小于 0.5，则我们选 `"f"` 就结束了，如果大于 0.5，则只继续选取最后一个元素，假设随机值为 0.583：
 
-5 * 0.264 = 1.32
+	2 * 0.583 = 1.166
+跳过 `"f"` 后就只剩下最后一个元素了。无论随机值是什么，都不得不选 `"g"` ,否则将无法获取足够的值了，算法也就不正确了！
 
-There are only 2 elements left to select, so this number must be less than 2. It is, and we also add `"c"` to the selection. The total selection is `[ "b", "c" ]`.
+假设最后随机值为 0.999（注意上面说了随机值不会大于等于 1）。因此无论怎么选最后的值一定是小于 1:
 
-Only one item left to select but there are still 4 candidates to look at. Suppose the next random number is 0.718. The formula now gives:
+	1 * 0.999 = 0.999
+因此在随机选中的值不够时最后一个元素总会选中。最后的结果是 "`["b", "c", "g"]`" 。可以看到元素保持了在原数组中的顺序，因为我们是自左至右的抽取元素的。
 
-4 * 0.718 = 2.872
+这可能还不够说服你。。。如果一直随机值为 0.999（随机值最大化）还能抽够 3 个值吗？让我们计算一下看看：
 
-For this element to be selected the number has to be less than 1, as there is only 1 element left to be picked. It isn't, so we skip `"d"`. Only three possibilities left -- will we make it before we run out of elements?
+	7 * 0.999 = 6.993     is this less than 3? no
+	6 * 0.999 = 5.994     is this less than 3? no
+	5 * 0.999 = 4.995     is this less than 3? no
+	4 * 0.999 = 3.996     is this less than 3? no
+	3 * 0.999 = 2.997     is this less than 3? YES
+	2 * 0.999 = 1.998     is this less than 2? YES
+	1 * 0.999 = 0.999     is this less than 1? YES
 
-The random number is 0.346. The formula gives:
+还是正确的！ 但是这是不是表示随机概率越大，越容易抽中数组尾部的元素？ 不是的，所有的元素被选中的概率是相同的。（不信的我话在 playground 中试试看）
 
-3 * 0.346 = 1.038
-
-Just a tiny bit too high. We skip `"e"`. Only two candidates left...
-
-Note that now literally we're dealing with a coin toss: if the random number is less than 0.5 we select `"f"` and we're done. If it's greater than 0.5, we go on to the final element. Let's say we get 0.583:
-
-2 * 0.583 = 1.166
-
-We skip `"f"` and look at the very last element. Whatever random number we get here, it should always select `"g"` or we won't have selected enough elements and the algorithm doesn't work!
-
-Let's say our final random number is 0.999 (remember, it can never be 1.0 or higher). Actually, no matter what we choose here, the formula will always give a value less than 1:
-
-1 * 0.999 = 0.999
-
-And so the last element will always be chosen if we didn't have a big enough selection yet. The final selection is `[ "b", "c", "g" ]`. Notice that the elements are still in their original order, because we examined the array from left to right.
-
-Maybe you're not convinced yet... What if we always got 0.999 as the random value (the maximum possible), would that still select 3 items? Well, let's do the math:
-
-7 * 0.999 = 6.993     is this less than 3? no
-6 * 0.999 = 5.994     is this less than 3? no
-5 * 0.999 = 4.995     is this less than 3? no
-4 * 0.999 = 3.996     is this less than 3? no
-3 * 0.999 = 2.997     is this less than 3? YES
-2 * 0.999 = 1.998     is this less than 2? YES
-1 * 0.999 = 0.999     is this less than 1? YES
-
-It always works! But does this mean that elements closer to the end of the array have a higher probability of being chosen than those in the beginning? Nope, all elements are equally likely to be selected. (Don't take my word for it: see the playground for a quick test that shows this in practice.)
-
-Here's an example of how to test this algorithm:
+下面有个测试的例子：
 
 ```swift
 let input = [
-"there", "once", "was", "a", "man", "from", "nantucket",
-"who", "kept", "all", "of", "his", "cash", "in", "a", "bucket",
-"his", "daughter", "named", "nan",
-"ran", "off", "with", "a", "man",
-"and", "as", "for", "the", "bucket", "nan", "took", "it",
+  "there", "once", "was", "a", "man", "from", "nantucket",
+  "who", "kept", "all", "of", "his", "cash", "in", "a", "bucket",
+  "his", "daughter", "named", "nan",
+  "ran", "off", "with", "a", "man",
+  "and", "as", "for", "the", "bucket", "nan", "took", "it",
 ]
 
 let output = select(from: input, count: 10)
@@ -192,11 +178,12 @@ print(output)
 print(output.count)
 ```
 
-The performance of this second algorithm is **O(n)** as it may require a pass through the entire input array.
+第二个算法的复杂度为 **O(n)** ,且需要传入整个数组。
 
-> **Note:** If `k > n/2`, then it's more efficient to do it the other way around and choose `k` items to remove.
+> 注意：如果 `k > n/2`, 用相反的方法效率更高选 `count - k` 个元素然后移除掉就可以了
 
 Based on code from Algorithm Alley, Dr. Dobb's Magazine, October 1993.
 
-*Written for Swift Algorithm Club by Matthijs Hollemans*
+代码是基于 1993年10月份的杂志 Algorithm Alley, Dr. Dobb's Magazine。
 
+*作者 Matthijs Hollemans，译者 KeithMorning， 所有权归 Swift Algorithm Club *
