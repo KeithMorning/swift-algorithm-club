@@ -186,4 +186,4 @@ Based on code from Algorithm Alley, Dr. Dobb's Magazine, October 1993.
 
 代码是基于 1993年10月份的杂志 Algorithm Alley, Dr. Dobb's Magazine。
 
-*作者 Matthijs Hollemans，译者 KeithMorning， 所有权归 Swift Algorithm Club *
+*作者 Matthijs Hollemans，译者 KeithMorning， 所有权归 Swift Algorithm Club*
