@@ -1,23 +1,21 @@
-# Union-Find
+# 并查集
 
-Union-Find is a data structure that can keep track of a set of elements partitioned into a number of disjoint (non-overlapping) subsets. It is also known as disjoint-set data structure.
+并查集数据结构是将一组元素分成多个不相交的子集，又称为不相交集。
 
-What do we mean by this? For example, the Union-Find data structure could be keeping track of the following sets:
+到底是神马意思？举个例子说并查集就是如下一组集合：
 
 	[ a, b, f, k ]
 	[ e ]
 	[ g, d, c ]
 	[ i, j ]
 
-These sets are **disjoint** because they have no members in common.
+这些集合是不相交的，因为它们没有共同的成员。
 
-Union-Find supports three basic operations:
+并查集支持三种基本操作：
 
-1. **Find(A)**: Determine which subset an element **A** is in. For example, `find(d)` would return the subset `[ g, d, c ]`.
-
-2. **Union(A, B)**: Join two subsets that contain **A** and **B** into a single subset. For example, `union(d, j)` would combine `[ g, d, c ]` and `[ i, j ]` into the larger set `[ g, d, c, i, j ]`.
-
-3. **AddSet(A)**: Add a new subset containing just that element **A**. For example, `addSet(h)` would add a new set `[ h ]`.
+1. **Find(A)**：找到 **A** 在那个子集中。比如 `find(d)` 函数返回 `[g, d, c ]` 。 
+2. **Union(A, B)**：把某两个集合 **A** 和 **B** 合成一个子集。比如 `union(d, j)` 需要将  `[ g, d, c ]` 和 `[ i, j ]`  合并成一个大的集合`[ g, d, c, i, j ]`。
+3. **AddSet(A)**：生成一个只包含 **A** 新子集。如 `addSet(h)` 生成一个新集合 `[ h ]`。
 
 The most common application of this data structure is keeping track of the connected components of an undirected [graph](../Graph/). It is also used for implementing an efficient version of Kruskal's algorithm to find the minimum spanning tree of a graph.
 
@@ -201,20 +199,20 @@ Path Compression helps keep trees very flat, thus find operation could take __AL
 ## Complexity Summary
 
 ##### To process N objects
-| Data Structure | Union | Find |
-|---|---|---|
-|Quick Find|N|1|
-|Quick Union|Tree height|Tree height|
-|Weighted Quick Union|lgN|lgN|
-|Weighted Quick Union + Path Compression| very close, but not O(1)| very close, but not O(1) |
+| Data Structure                          | Union                    | Find                     |
+| --------------------------------------- | ------------------------ | ------------------------ |
+| Quick Find                              | N                        | 1                        |
+| Quick Union                             | Tree height              | Tree height              |
+| Weighted Quick Union                    | lgN                      | lgN                      |
+| Weighted Quick Union + Path Compression | very close, but not O(1) | very close, but not O(1) |
 
 ##### To process M union commands on N objects
-| Algorithm | Worst-case time|
-|---|---|
-|Quick Find| M N |
-|Quick Union| M N |
-|Weighted Quick Union| N + M lgN |
-|Weighted Quick Union + Path Compression| (M + N) lgN |
+| Algorithm                               | Worst-case time |
+| --------------------------------------- | --------------- |
+| Quick Find                              | M N             |
+| Quick Union                             | M N             |
+| Weighted Quick Union                    | N + M lgN       |
+| Weighted Quick Union + Path Compression | (M + N) lgN     |
 
 ## See also
 
