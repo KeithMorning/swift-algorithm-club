@@ -1,12 +1,12 @@
-# k-th Largest Element Problem
+# 第K大元素
 
-You're given an integer array `a`. Write an algorithm that finds the *k*-th largest element in the array.
+给定一个数组 `a` ，写一个算法找出第K大的元素。
 
-For example, the 1-st largest element is the maximum value that occurs in the array. If the array has *n* elements, the *n*-th largest element is the minimum. The median is the *n/2*-th largest element.
+比如在 *第一大* 的元素是最大元素。如果数组有 *n* 个元素，*第 n 大* 元素为最小值，中间最大为 *第n/2* 大值。
 
-## The naive solution
+## 原始方案
 
-The following solution is semi-naive. Its time complexity is **O(n log n)** since it first sorts the array, and therefore also uses additional **O(n)** space.
+下面的算法是半原生的。它的时间复杂度是 **O(n log n)**，因为它需要先排序，因此需要额外的 **O(n)** 的空间。
 
 ```swift
 func kthLargest(a: [Int], k: Int) -> Int? {
@@ -20,68 +20,63 @@ func kthLargest(a: [Int], k: Int) -> Int? {
 }
 ```
 
-The `kthLargest()` function takes two parameters: the array `a` consisting of integers, and `k`. It returns the *k*-th largest element.
+`kthLargest()` 函数有两个参数，整数型数组 `a` 和 `k` 用来表示第 *k* 大的元素。  
 
-Let's take a look at an example and run through the algorithm to see how it works. Given `k = 4` and the array:
+举例说明一下这个算法的原理，假定 `k = 4` ， 数组如下： 
 
 ```swift
 [ 7, 92, 23, 9, -1, 0, 11, 6 ]
 ```
 
-Initially there's no direct way to find the k-th largest element, but after sorting the array it's rather straightforward. Here's the sorted array:
+最开始无法直接找到第 k 大的元素，但是排序后就非常简单了，排序后如下：
 
 ```swift
 [ -1, 0, 6, 7, 9, 11, 23, 92 ]
 ```
 
-Now, all we must do is take the value at index `a.count - k`:
+现在只需要取 `a.count - k` 对应的值：
 
 ```swift
 a[a.count - k] = a[8 - 4] = a[4] = 9
 ```
 
-Of course, if you were looking for the k-th *smallest* element, you'd use `a[k-1]`.
+当然如果需要找 *第 k 小* 的值时用 `a[k-1]` 即可
 
-## A faster solution
+## 更快的算法
 
-There is a clever algorithm that combines the ideas of [binary search](../Binary%20Search/) and [quicksort](../Quicksort/) to arrive at an **O(n)** solution.
+这个算法借鉴了 [二分查找](../Binary%20Search/) 和 [快排](../Quicksort/)  的思想，时间复杂度为 **O(n)**
 
-Recall that binary search splits the array in half over and over again, to quickly narrow in on the value you're searching for. That's what we'll do here too.
+不断调用二分查找将数组分割成一半又一半，快速的缩小查询的值的范围。
 
-Quicksort also splits up arrays. It uses partitioning to move all smaller values to the left of the pivot and all greater values to the right. After partitioning around a certain pivot, that pivot value will already be in its final, sorted position. We can use that to our advantage here.
+快速排序也分割数组，把小于轴值的移至左边，所有大于轴值的移至右边。经过某个轴值分区后，轴值所在的位置就是排序后最终位置。可以利用这一点来提高算法。
 
-Here's how it works: We choose a random pivot, partition the array around that pivot, then act like a binary search and only continue in the left or right partition. This repeats until we've found a pivot that happens to end up in the *k*-th position.
+下面介绍如何工作：随机选一个值作为轴值进行分区，像二分查找一样继续对左右分区进行处理，直到恰好一个轴值是在 `k-th` 位置。
 
-Let's look at the original example again. We're looking for the 4-th largest element in this array:
+举个例子说明一下，在下面的数组中找 第 `4`  大的元素：
 
 	[ 7, 92, 23, 9, -1, 0, 11, 6 ]
+该算法对查找第k小值也是很简单的，来让我们试试查找`k = 4` 的最小值。 
 
-The algorithm is a bit easier to follow if we look for the k-th *smallest* item instead, so let's take `k = 4` and look for the 4-th smallest element.
-
-Note that we don't have to sort the array first. We pick one of the elements at random to be the pivot, let's say `11`, and partition the array around that. We might end up with something like this:
+我们不用先对数组排序，随机选一个值比如 `11` 作为轴值进行分区，结果如下：
 
 	[ 7, 9, -1, 0, 6, 11, 92, 23 ]
 	 <------ smaller    larger -->
 
-As you can see, all values smaller than `11` are on the left; all values larger are on the right. The pivot value `11` is now in its final place. The index of the pivot is 5, so the 4-th smallest element must be in the left partition somewhere. We can ignore the rest of the array from now on:
+根据结果，比 `11` 小的值在左边，大的值在右边。`11` 在它的最终位置上，索引值为 5 ， 因此第 4 小的值肯定是在左边的位置可以忽略其他的部分：
 
 	[ 7, 9, -1, 0, 6, x, x, x ]
-
-Again let's pick a random pivot, let's say `6`, and partition the array around it. We might end up with something like this:
+再随机选一个轴值比如 `6` 将数组分区，结果如下：
 
 	[ -1, 0, 6, 9, 7, x, x, x ]
-
-Pivot `6` ended up at index 2, so obviously the 4-th smallest item must be in the right partition. We can ignore the left partition:
+轴值 `6` 的索引值为 2，显然第 `4` 大的值在右边分区，可以忽略左边的分区了：
 
 	[ x, x, x, 9, 7, x, x, x ]
-
-Again we pick a pivot value at random, let's say `9`, and partition the array:
+重复以上操作后如下：
 
 	[ x, x, x, 7, 9, x, x, x ]
+轴值 `9` 的索引值为 4，而且这正是要查找的！可以看到我们不需要对数组排序，用很少的步数就能实现。
 
-The index of pivot `9` is 4, and that's exactly the *k* we're looking for. We're done! Notice how this only took a few steps and we did not have to sort the array first.
-
-The following function implements these ideas:
+实现方法如下：
 
 ```swift
 public func randomizedSelect<T: Comparable>(_ array: [T], order k: Int) -> T {
@@ -126,16 +121,15 @@ public func randomizedSelect<T: Comparable>(_ array: [T], order k: Int) -> T {
 }
 ```
 
-To keep things readable, the functionality is split into three inner functions:
+为了提高可读性，这个函数分成三个内部函数：
 
-- `randomPivot()` picks a random number and puts it at the end of the current partition (this is a requirement of the Lomuto partitioning scheme, see the discussion on [quicksort](../Quicksort/) for more details).
+- `randomPivot()` 随机选取一个数字，然后放在当前分区的最后一个位置（这是Lomuto 分区方式所规定的，更多介绍请看[快排](../Quicksort/)）
+- `randomizedPartition()` 是快排中 Lomuto 分区方法。当完成后，随机轴值在的位置就是排序后的最终位置。返回轴值所在的位置。
+- `randomizedSelect()` 做所有的脏活累活。先调用分区函数，后决定再做什么。如果轴值索引值等于 k ,那么该值正是查找值，完成查找。如果 `k` 比该索引值小，那么查找值一定在左边分区，递归调用就可以了，否则就肯定是在右边分区中。
 
-- `randomizedPartition()` is Lomuto's partitioning scheme from quicksort. When this completes, the randomly chosen pivot is in its final sorted position in the array. It returns the array index of the pivot.
+非常😎，是不是？ 快排的期望复杂度为 **o(n log n)**， 但是因为只把数组分成越来越小的分区，`randomizedSelect()` 的时间复杂度为 **O(n)**。
 
-- `randomizedSelect()` does all the hard work. It first calls the partitioning function and then decides what to do next. If the index of the pivot is equal to the *k*-th number we're looking for, we're done. If `k` is less than the pivot index, it must be in the left partition and we'll recursively try again there. Likewise for when the *k*-th number must be in the right partition.
+> 注意：该函数式计算数组中 *第k* 小元素，`k` 是从 0 开始的。如果需要 `第k` 大元素，应调用 `a.count - k`。
 
-Pretty cool, huh? Normally quicksort is an **O(n log n)** algorithm, but because we only partition smaller and smaller slices of the array, the running time of `randomizedSelect()` works out to **O(n)**.
+*作者 Daniel Speiser 修改 Matthijs Hollemans 译者 KeithMorning*
 
-> **Note:** This function calculates the *k*-th smallest item in the array, where *k* starts at 0. If you want the *k*-th largest item, call it with `a.count - k`.
-
-*Written by Daniel Speiser. Additions by Matthijs Hollemans.*
