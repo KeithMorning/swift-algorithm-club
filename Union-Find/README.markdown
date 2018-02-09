@@ -2,7 +2,7 @@
 
 并查集数据结构是对一组分成多个不相交的子集元素的处理，并查集又称为不相交集。
 
-到底是神马意思？举个例子说并查集用来处理下面集合合并和查询：
+到底是神马意思？举个例子，并查集是用来处理下面集合合并和查询：
 
 	[ a, b, f, k ]
 	[ e ]
@@ -17,12 +17,15 @@
 2. **Union(A, B)**：把某两个集合 **A** 和 **B** 合成一个子集。比如 `union(d, j)` 需要将  `[ g, d, c ]` 和 `[ i, j ]`  合并成一个大的集合`[ g, d, c, i, j ]`。
 3. **AddSet(A)**：生成一个只包含 **A** 新子集。如 `addSet(h)` 生成一个新集合 `[ h ]`。
 
-The most common application of this data structure is keeping track of the connected components of an undirected [graph](../Graph/). It is also used for implementing an efficient version of Kruskal's algorithm to find the minimum spanning tree of a graph.
+该数据结构最常用于查询无向[图](../Graph/)中的节点。它也能用于提高 Kruskal 算法的效率，用于查找图中最小生成树。
 
-## Implementation
+## 代码实现
 
-Union-Find can be implemented in many ways but we'll look at an efficient and easy to understand implementation: Weighted Quick Union.
-> __PS: Multiple implementations of Union-Find has been included in playground.__
+并查集有很多实现方法，下面用一种相对简单高效的方式实现：加权Quick-Union。
+
+
+
+> __PS：可以在 playground 中找到并查集的多种实现方式__
 
 ```swift
 public struct UnionFind<T: Hashable> {
@@ -32,16 +35,16 @@ public struct UnionFind<T: Hashable> {
 }
 ```
 
-Our Union-Find data structure is actually a forest where each subset is represented by a [tree](../Tree/).
+这里并查集数据结构实际是森林，每个子集用[树](../Tree/)表示。
 
-For our purposes we only need to keep track of the parent of each tree node, not the node's children. To do this we use the array `parent` so that `parent[i]` is the index of node `i`'s parent.
+由于目标只是保持对每个树节父点的联系，不需要联系子节点，可以通过一个父节点的数组来表示，`parent[ i ]` 表示第 `i` 个父节点。
 
-Example: If `parent` looks like this,
+举例：如果父节点数组像这样
 
 	parent [ 1, 1, 1, 0, 2, 0, 6, 6, 6 ]
 	     i   0  1  2  3  4  5  6  7  8
 
-then the tree structure looks like:
+树的结构如下：
 
 	      1              6
 	    /   \           / \
@@ -49,17 +52,17 @@ then the tree structure looks like:
 	 / \     /
 	3   5   4
 
-There are two trees in this forest, each of which corresponds to one set of elements. (Note: due to the limitations of ASCII art the trees are shown here as binary trees but that is not necessarily the case.)
+森林中有两棵树，每棵对应一组元素集合。（备注：这里是因为受制于 ASCII 表达形式所以用二叉树表示的，实际情况并不局限于此）。
 
-We give each subset a unique number to identify it. That number is the index of  the root node of that subset's tree. In the example, node `1` is the root of the first tree and `6` is the root of the second tree.
+每个子集使用唯一的数字来标示。子集合树的根节点作为索引，如 `1` 是第一棵树的根节点， `6` 是第二棵树的根节点。
 
-So in this example we have two subsets, the first with the label `1` and the second with the label `6`. The **Find** operation actually returns the set's label, not its contents.
+在这个例子中有两个子集，第一个代表值为 `1` ，第二个为 `6` 。**Find** 函数返回的是子集的代表值，而不是它的内部数据。
 
-Note that the `parent[]` of a root node points to itself. So `parent[1] = 1` and `parent[6] = 6`. That's how we can tell something is a root node.
+注意 `parent[]` 中根节点指向自己，如 `parent[1] = 1` 和 `parent[6] = 6` ，可以通过这个方法可以发现那些是根节点。
 
-## Add set
+## 添加
 
-Let's look at the implementation of these basic operations, starting with adding a new set.
+从添加开始，看看如何实现一些基本操作：
 
 ```swift
 public mutating func addSetWith(_ element: T) {
@@ -69,15 +72,13 @@ public mutating func addSetWith(_ element: T) {
 }
 ```
 
-When you add a new element, this actually adds a new subset containing just that element.
+当添加一个新元素，实际是添加一个包含该元素的集合。
 
-1. We save the index of the new element in the `index` dictionary. That lets us look up the element quickly later on.
+1. 保存新元素的索引到 `index` 字典中。可以帮助快速查找该元素。
+2. 添加索引到 `parent` 数组中并为这个集合新建一个树。由于这个新集合只包含一个值，而且该值为树的根节点，所以`parent[i]` 指向自己。
+3. `size[i]` 是索引值为 `i` 根节点处的节点个数。对于新集合因为只含一个元素所以值为 1 。在随后的合并操作中会用到 `size` 这个数组。
 
-2. Then we add that index to the `parent` array to build a new tree for this  set. Here, `parent[i]` is pointing to itself because the tree that represents the new set contains only one node, which of course is the root of that tree.
-
-3. `size[i]` is the count of nodes in the tree whose root is at index `i`. For the new set this is 1 because it only contains the one element. We'll be using the `size` array in the Union operation.
-
-## Find
+## 查找
 
 Often we want to determine whether we already have a set that contains a given element. That's what the **Find** operation does. In our `UnionFind` data structure it is called `setOf()`:
 
