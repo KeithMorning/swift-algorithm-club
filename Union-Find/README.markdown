@@ -80,7 +80,7 @@ public mutating func addSetWith(_ element: T) {
 
 ## 查找
 
-Often we want to determine whether we already have a set that contains a given element. That's what the **Find** operation does. In our `UnionFind` data structure it is called `setOf()`:
+经常需要查找某个元素是否在集合中， **Find** 函数就是干这个事滴！在 `并查集` 中又称为 `setof()`: 
 
 ```swift
 public mutating func setOf(_ element: T) -> Int? {
@@ -92,7 +92,7 @@ public mutating func setOf(_ element: T) -> Int? {
 }
 ```
 
-This looks up the element's index in the `index` dictionary and then uses a helper method to find the set that this element belongs to:
+先通过 `index` 字典来查找某个元素的索引值，再用一个函数来查找该元素属于哪个集合:
 
 ```swift
 private mutating func setByIndex(_ index: Int) -> Int {
@@ -105,14 +105,15 @@ private mutating func setByIndex(_ index: Int) -> Int {
 }
 ```
 
-Because we're dealing with a tree structure, this is a recursive method.
+因为和树打交道，这里用了递归的方法。
 
 Recall that each set is represented by a tree and that the index of the root node serves as the number that identifies the set. We're going to find the root node of the tree that the element we're searching for belongs to, and return its index.
 
-1. First, we check if the given index represents a root node (i.e. a node whose `parent` points back to the node itself). If so, we're done.
+回顾一下，每个集合用一棵树来表示，根节点的索引值为集合的代表值。查找该元素所属树的根节点，并返回它的索引值。
 
+1. 第一步先检查输入的 index 值是否是根节点。（根节点的 `parent` 指回自己），如果是，结束查找。
 2. Otherwise we recursively call this method on the parent of the current node. And then we do a **very important thing**: we overwrite the parent of the current node with the index of root node, in effect reconnecting the node directly to the root of the tree. The next time we call this method, it will execute faster because the path to the root of the tree is now much shorter. Without that optimization, this method's complexity is **O(n)** but now in combination with the size optimization (covered in the Union section) it is almost **O(1)**.
-
+3. 否则，需要递归
 3. We return the index of the root node as the result.
 
 Here's illustration of what I mean. Let's say the tree looks like this:
