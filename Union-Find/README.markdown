@@ -105,30 +105,31 @@ private mutating func setByIndex(_ index: Int) -> Int {
 }
 ```
 
-因为和树打交道，这里用了递归的方法。
-
-Recall that each set is represented by a tree and that the index of the root node serves as the number that identifies the set. We're going to find the root node of the tree that the element we're searching for belongs to, and return its index.
+既然和树打交道了就用递归的方法来解决吧。
 
 回顾一下，每个集合用一棵树来表示，根节点的索引值为集合的代表值。查找该元素所属树的根节点，并返回它的索引值。
 
 1. 第一步先检查输入的 index 值是否是根节点。（根节点的 `parent` 指回自己），如果是，结束查找。
-2. Otherwise we recursively call this method on the parent of the current node. And then we do a **very important thing**: we overwrite the parent of the current node with the index of root node, in effect reconnecting the node directly to the root of the tree. The next time we call this method, it will execute faster because the path to the root of the tree is now much shorter. Without that optimization, this method's complexity is **O(n)** but now in combination with the size optimization (covered in the Union section) it is almost **O(1)**.
-3. 否则，需要递归
-3. We return the index of the root node as the result.
+2. 否则，递归调用当前节点的父节点方法。 接下来的是**非常重要的一步**：重写当前节点的父节点为根节点，实际就是将节点重新连接到根节点上。当下次在调用这个方法的时候速度就快了，因为到根节点的路径非常短了。如果没有这个优化这个方法的复杂度为 **O(n)**，但经过路径压缩后（在合并环节）复杂度接近 **O(1)**。
+3. 返回根节点作为结果。
 
-Here's illustration of what I mean. Let's say the tree looks like this:
+这里有一个图形化的解释，让我们来看看：
 
 ![BeforeFind](Images/BeforeFind.png)
 
-We call `setOf(4)`. To find the root node we have to first go to node `2` and then to node `7`. (The indices of the elements are marked in red.)
 
-During the call to `setOf(4)`, the tree is reorganized to look like this:
+
+调用 `setOf(4)` 试试看，为了查到根节点，需要先访问 `2` 节点，然后再访问 `7` 节点。（索引值用红色数字标示）。
+
+调用 `setOf(4)` 后，树结构如下：
 
 ![AfterFind](Images/AfterFind.png)
 
-Now if we need to call `setOf(4)` again, we no longer have to go through node `2` to get to the root. So as you use the Union-Find data structure, it optimizes itself. Pretty cool!
 
-There is also a helper method to check that two elements are in the same set:
+
+现在若再调用 `setOf(4)` ，不需要再经过节点 `2` 才能到根节点。因此在使用并查集数据结构的时候会自优化，是不是很酷！
+
+这里有个便捷的方法可以判断两个元素是不是在一个集合中：
 
 ```swift
 public mutating func inSameSet(_ firstElement: T, and secondElement: T) -> Bool {
@@ -140,11 +141,11 @@ public mutating func inSameSet(_ firstElement: T, and secondElement: T) -> Bool 
 }
 ```
 
-Since this calls `setOf()` it also optimizes the tree.
+因为调用了 `sefOf()` 方法也会优化树结构。
 
-## Union (Weighted)
+## 合并（权重）
 
-The final operation is **Union**, which combines two sets into one larger set.
+最后的操作是 `合并` 就是将两个集合合并成一个大的集合。
 
 ```swift
     public mutating func unionSetsContaining(_ firstElement: T, and secondElement: T) {
@@ -162,31 +163,27 @@ The final operation is **Union**, which combines two sets into one larger set.
     }
 ```
 
-Here is how it works:
+计算过程如下：
 
-1. We find the sets that each element belongs to. Remember that this gives us two integers: the indices of the root nodes in the `parent` array.
+1. 给出两个集合，这两个集合都有一个根节点的索引值存在 `parent` 数组中。
+2. 判断是不是相同的集合，合并两个相同的集合没有任何意义。
+3. 以大小作为权重进行优化，如果想让树的深度尽可能的保持最小，需要把小的树添加到大的树上。通过比较两个树的数组个数决定那个树更小。
+4. 下面将小一些的树添加到大一些树的根节点。
+5. 因为增加一堆新的树节点，需要更新大树的元素个数值。
 
-2. Check that the sets are not equal because if they are it makes no sense to union them.
-
-3. This is where the size optimization comes in (Weighting). We want to keep the trees as shallow as possible so we always attach the smaller tree to the root of the larger tree. To determine which is the smaller tree we compare trees by their sizes.
-
-4. Here we attach the smaller tree to the root of the larger tree.
-
-5. Update the size of larger tree because it just had a bunch of nodes added to it.
-
-An illustration may help to better understand this. Let's say we have these two sets, each with its own tree:
+为了更好介绍这个算法，举个例子说明一下，有两个集合，每个集合的树的数据结构如下：
 
 ![BeforeUnion](Images/BeforeUnion.png)
 
-Now we call `unionSetsContaining(4, and: 3)`. The smaller tree is attached to the larger one:
+现在调用方法 `unionSetsContaining(4, and: 3)` 将小一些的树添加到大一些的树上：
 
 ![AfterUnion](Images/AfterUnion.png)
 
-Note that, because we call `setOf()` at the start of the method, the larger tree was also optimized in the process -- node `3` now hangs directly off the root.
+因为在开始的时候调用了 `setOf()` ，所以大一些的树仍然会走优化流程 — 节点 `3` 直接挂到根节点上。
 
-Union with optimizations also takes almost **O(1)** time.
+合并的优化的复杂度也为 **O(1)**。
 
-## Path Compression
+## 路径压缩
 ```swift
 private mutating func setByIndex(_ index: Int) -> Int {
     if index != parent[index] {
@@ -196,30 +193,29 @@ private mutating func setByIndex(_ index: Int) -> Int {
     return parent[index]
 }
 ```
-Path Compression helps keep trees very flat, thus find operation could take __ALMOST__ in __O(1)__
+路径压缩能够使树不断变平坦，因此查找复杂度 **几乎** 接近 **O(1)**。
 
-## Complexity Summary
+## 复杂度总结
 
-##### To process N objects
-| Data Structure                          | Union                    | Find                     |
+##### 处理 N 个元素
+| 数据结构                                | Union                    | Find                     |
 | --------------------------------------- | ------------------------ | ------------------------ |
 | Quick Find                              | N                        | 1                        |
 | Quick Union                             | Tree height              | Tree height              |
 | Weighted Quick Union                    | lgN                      | lgN                      |
 | Weighted Quick Union + Path Compression | very close, but not O(1) | very close, but not O(1) |
 
-##### To process M union commands on N objects
-| Algorithm                               | Worst-case time |
-| --------------------------------------- | --------------- |
-| Quick Find                              | M N             |
-| Quick Union                             | M N             |
-| Weighted Quick Union                    | N + M lgN       |
-| Weighted Quick Union + Path Compression | (M + N) lgN     |
+##### N个元素中做M次并集
 
-## See also
+| 算法                                    | 最坏的情况  |
+| --------------------------------------- | ----------- |
+| Quick Find                              | M N         |
+| Quick Union                             | M N         |
+| Weighted Quick Union                    | N + M lgN   |
+| Weighted Quick Union + Path Compression | (M + N) lgN |
 
-See the playground for more examples of how to use this handy data structure.
+## 更多
 
-[Union-Find at Wikipedia](https://en.wikipedia.org/wiki/Disjoint-set_data_structure)
+可以继续查看[源码](https://github.com/raywenderlich/swift-algorithm-club/tree/master/Union-Find)中的其他算法的工作原理。还可以看[Union-Find at Wikipedia](https://en.wikipedia.org/wiki/Disjoint-set_data_structure)。
 
-*Written for Swift Algorithm Club by [Artur Antonov](https://github.com/goingreen)*, *modified by [Yi Ding](https://github.com/antonio081014).*
+*作者[Artur Antonov](https://github.com/goingreen)*, *审核 [Yi Ding ](https://github.com/antonio081014).*  *译者KeithMorning*。
