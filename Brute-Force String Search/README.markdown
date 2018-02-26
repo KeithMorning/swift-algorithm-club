@@ -51,8 +51,6 @@ extension String {
 
 这个算法遍历了原字符串中所有的字符。如果与搜索串的第一个字符相同，则内层循环对比搜索串中剩余的字符，如果没有匹配成功，外层从上次位置重新开始，直到找到一个匹配的字符串或者遍历结束。
 
-The brute-force approach works OK, but it's not very efficient (or pretty). It should work fine on small strings, though. For a smarter algorithm that works better with large chunks of text, check out [Boyer-Moore](../Boyer-Moore/) string search.
-
 暴力搜索算法可以实现，但是效率不高（也不优雅）。在短字符串上用用还行。如果需要一个又小在处理大量文本又高效的算法，可以试试 [Boyer-Moore](../Boyer-Moore/) 。
 
 *作者 Matthijs Hollemans ，译者 KeithMorning*
