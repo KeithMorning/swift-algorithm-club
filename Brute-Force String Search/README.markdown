@@ -1,10 +1,10 @@
-# Brute-Force String Search
+# 字符串暴力搜索
 
-How would you go about writing a string search algorithm in pure Swift if you were not allowed to import Foundation and could not use `NSString`'s `rangeOfString()` method?
+如何不引用 Foundation 和 `NSString` 的 `rangeOfString()` 方法写一个纯 Swift 的字符串搜索算法？
 
-The goal is to implement an `indexOf(pattern: String)` extension on `String` that returns the `String.Index` of the first occurrence of the search pattern, or `nil` if the pattern could not be found inside the string.
- 
-For example:
+目标：写一个 `String` 扩展方法 `indexOf(pattern: String)` 并返回第一个匹配字符串的 `String.Index` ，如何没有搜索到，返回 `nil` 。
+
+例如：
 
 ```swift
 // Input: 
@@ -22,9 +22,9 @@ animals.indexOf("🐮")
 <String.Index?> 6
 ```
 
-> **Note:** The index of the cow is 6, not 3 as you might expect, because the string uses more storage per character for emoji. The actual value of the `String.Index` is not so important, just that it points at the right character in the string.
+> **注意** ：这里🐮的索引值看起来好像是3，实际上为 6 。因为 emoji 需要更多的字符串表示。`String.Index` 的值不重要，只要它指向字符串中正确的字符。 
 
-Here is a brute-force solution:
+暴力搜索算法如下:
 
 ```swift
 extension String {
@@ -49,8 +49,10 @@ extension String {
 }
 ```
 
-This looks at each character in the source string in turn. If the character equals the first character of the search pattern, then the inner loop checks whether the rest of the pattern matches. If no match is found, the outer loop continues where it left off. This repeats until a complete match is found or the end of the source string is reached.
+这个算法遍历了原字符串中所有的字符。如果与搜索串的第一个字符相同，则内层循环对比搜索串中剩余的字符，如果没有匹配成功，外层从上次位置重新开始，直到找到一个匹配的字符串或者遍历结束。
 
 The brute-force approach works OK, but it's not very efficient (or pretty). It should work fine on small strings, though. For a smarter algorithm that works better with large chunks of text, check out [Boyer-Moore](../Boyer-Moore/) string search.
 
-*Written for Swift Algorithm Club by Matthijs Hollemans*
+暴力搜索算法可以实现，但是效率不高（也不优雅）。在短字符串上用用还行。如果需要一个又小在处理大量文本又高效的算法，可以试试 [Boyer-Moore](../Boyer-Moore/) 。
+
+*作者 Matthijs Hollemans ，译者 KeithMorning*
