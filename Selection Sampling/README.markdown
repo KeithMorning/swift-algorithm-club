@@ -182,8 +182,6 @@ print(output.count)
 
 > 注意：如果 `k > n/2`, 用相反的方法效率更高选 `count - k` 个元素然后移除掉就可以了
 
-Based on code from Algorithm Alley, Dr. Dobb's Magazine, October 1993.
-
 代码是基于 1993年10月份的杂志 Algorithm Alley, Dr. Dobb's Magazine。
 
 *作者 Matthijs Hollemans，译者 KeithMorning， 所有权归 Swift Algorithm Club*
