@@ -1,10 +1,10 @@
-# Knuth-Morris-Pratt String Search
+# Knuth-Morris-Pratt（KMP） 字符串搜索算法
 
-Goal: Write a linear-time string matching algorithm in Swift that returns the indexes of all the occurrencies of a given pattern.
+目标：用 Swift 写一个线性的字符串搜索算法，返回模式串匹配到所有索引值。
 
-In other words, we want to implement an `indexesOf(pattern: String)` extension on `String` that returns an array `[Int]` of integers, representing all occurrences' indexes of the search pattern, or `nil` if the pattern could not be found inside the string.
+换句话说就是，实现一个 `String` 的扩展方法 `indexesOf(Pattern:String)` ，函数返回 `[Int]` 表示模式串搜索到的所有索引值，如果没有匹配到，返回 `nil` 。
 
-For example:
+举例如下：
 
 ```swift
 let dna = "ACCCGGTTTTAAAGAACCACCATAAGATATAGACAGATATAGGACAGATATAGAGACAAAACCCCATACCCCAATATTTTTTTGGGGAGAAAAACACCACAGATAGATACACAGACTACACGAGATACGACATACAGCAGCATAACGACAACAGCAGATAGACGATCATAACAGCAATCAGACCGAGCGCAGCAGCTTTTAAGCACCAGCCCCACAAAAAACGACAATFATCATCATATACAGACGACGACACGACATATCACACGACAGCATA"
@@ -14,12 +14,14 @@ let concert = "🎼🎹🎹🎸🎸🎻🎻🎷🎺🎤👏👏👏"
 concert.indexesOf(ptnr: "🎻🎷")   // Output: [6]
 ```
 
-The [Knuth-Morris-Pratt algorithm](https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm) is considered one of the best algorithms for solving the pattern matching problem. Although in practice [Boyer-Moore](../Boyer-Moore/) is usually preferred, the algorithm that we will introduce is simpler, and has the same (linear) running time.
+[Knuth-Morris-Pratt](https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm) 算法被公认是字符串匹配查找的最好算法之一。虽然  [Boyer-Moore](../Boyer-Moore/) 更受欢迎，但是这个算法更加简单，也同样只需要线性的时间复杂度。
 
 The idea behind the algorithm is not too different from the [naive string search](../Brute-Force%20String%20Search/) procedure. As it, Knuth-Morris-Pratt aligns the text with the pattern and goes with character comparisons from left to right. But, instead of making a shift of one character when a mismatch occurs, it uses a more intelligent way to move the pattern along the text. In fact, the algorithm features a pattern pre-processing stage where it acquires all the informations that will make the algorithm skip redundant comparisons, resulting in larger shifts.
 
 The pre-processing stage produces an array (called `suffixPrefix` in the code) of integers in which every element `suffixPrefix[i]` records the length of the longest proper suffix of `P[0...i]` (where `P` is the pattern) that matches a prefix of `P`. In other words, `suffixPrefix[i]` is the longest proper substring of `P` that ends at position `i` and that is a prefix of `P`. Just a quick example. Consider `P = "abadfryaabsabadffg"`, then `suffixPrefix[4] = 0`, `suffixPrefix[9] = 2`, `suffixPrefix[14] = 4`.
 There are different ways to obtain the values of `SuffixPrefix` array. We will use the method based on the [Z-Algorithm](../Z-Algorithm/). This function takes in input the pattern and produces an array of integers. Each element represents the length of the longest substring starting at position `i` of `P` and that matches a prefix of `P`. You can notice that the two arrays are similar, they record the same informations but on the different places. We only have to find a method to map `Z[i]` to `suffixPrefix[j]`. It is not that difficult and this is the code that will do for us:
+
+预处理后得到一个整型数组（代码中命名为 `suffixPrefix`），数组每个元素 `suffixPrefix[i]` 记录的是 `P[0...i]` （ `P` 是模式串 ）最长的的后缀等于其前缀的长度。换句话说，`suffixPrefix[i]` 是 `P` 以 `i` 位置结束的最长子字符串就是 `P` 的一个前缀。（译者注：前缀指除了最后一个字符以外，一个字符串的全部头部组合；后缀指除了第一个字符以外，一个字符串的全部尾部组合。前缀和后缀的最长的共有元素的长度就是 `suffixPrefix` 要存的值）。比如 `P =  "abadfryaabsabadffg"`，则 `suffixPrefix[4] = 0`，`subffixPrefix[9] = 2`，`subffixPrefix[14] = 4`。（译者注：以 `suffixPrefix[9]` 为例，计算子字符串 `abadfryaab` , 其前缀集合为 `a, ab,aba,abad,abadf,abadfr,abadfry,abadfrya,abadfryaa` 和后缀集合为 `b,ab,aab,yaab,ryaab,fryaab,dfryaab,adfryaab,badfryaab`，相同的有 `ab,`因为匹配的只有一个，也就是最长值了，其长度为 2 ，因此 `subffixPrefix[9] = 2`。）计算这个并不复杂，可以使用如下的代码实现：
 
 ```swift
 for patternIndex in (1 ..< patternLength).reversed() {
@@ -29,6 +31,8 @@ for patternIndex in (1 ..< patternLength).reversed() {
 ```
 
 We are simply computing the index of the end of the substring starting at position `i` (as we know matches a prefix of `P`). The element of `suffixPrefix` at that index then it will be set with the length of the substring.
+
+我们可以计算以 `i` 开始的子字符串，
 
 Once the shift-array `suffixPrefix` is ready we can begin with pattern search stage. The algorithm first attempts to compare the characters of the text with those of the pattern. If it succeeds, it goes on until a mismatch occurs. When it happens, it checks if an occurrence of the pattern is present (and reports it). Otherwise, if no comparisons are made then the text cursor is moved forward, else the pattern is shifted to the right. The shift's amount is based on the `suffixPrefix` array, and it guarantees that the prefix `P[0...suffixPrefix[i]]` will match its opposing substring in the text. In this way, shifts of more than one character are often made and lot of comparisons can be avoided, saving a lot of time.
 
