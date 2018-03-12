@@ -27,13 +27,11 @@ for patternIndex in (1 ..< patternLength).reversed() {
 }
 ```
 
-We are simply computing the index of the end of the substring starting at position `i` (as we know matches a prefix of `P`). The element of `suffixPrefix` at that index then it will be set with the length of the substring.
+简单计算一下以索引值结束，以 `i` 开始的子字符串与 `P` 前缀是否匹配。把（匹配上的最长的）字符串长度赋值给`suffixPrefix` 数组的 Index 值 。
 
-我们从子字符串计算以 `i` 开始的子字符串，
+完成 `suffixPrefix` 偏移数组后，算法第一步就是尝试与模式串各个字符比较，如果比较成功，继续比较下一个，如果全部匹配，则直接移向下一段文本，否则需要将模式串右移，右移的位数根据 `suffixPrefix` ，它能够保证前缀 `P[0…suffixPrefix[i]]` 能够与对应的字符（后缀）相匹配（译者注：实际就是把后缀的位置替换为相同的前缀的位置）。通过这种方式可以大大减少匹配的次数，可以加快很多。
 
-Once the shift-array `suffixPrefix` is ready we can begin with pattern search stage. The algorithm first attempts to compare the characters of the text with those of the pattern. If it succeeds, it goes on until a mismatch occurs. When it happens, it checks if an occurrence of the pattern is present (and reports it). Otherwise, if no comparisons are made then the text cursor is moved forward, else the pattern is shifted to the right. The shift's amount is based on the `suffixPrefix` array, and it guarantees that the prefix `P[0...suffixPrefix[i]]` will match its opposing substring in the text. In this way, shifts of more than one character are often made and lot of comparisons can be avoided, saving a lot of time.
-
-Here is the code of the Knuth-Morris-Pratt algorithm:
+如下为 KMP 算法实现：
 
 ```swift
 extension String {
@@ -93,7 +91,7 @@ extension String {
 }
 ```
 
-Let's make an example reasoning with the code above. Let's consider the string `P = ACTGACTA"`, the consequentially obtained `suffixPrefix` array equal to `[0, 0, 0, 0, 0, 0, 3, 1]`, and the text `T = "GCACTGACTGACTGACTAG"`. The algorithm begins with the text and the pattern aligned like below. We have to compare `T[0]` with `P[0]`.  
+下面让我们解释一下上面的代码。如果 `P = "ACTGACTA"`，`suffixPrefix` 的结果为 `[0, 0, 0, 0, 0, 0, 3, 1]` ，文本为 `"GCACTGACTGACTGACTAG"`。算法开始的比较过程如下，先比较 `T[0]` 和 `P[0]`。
 
                               1       
                     0123456789012345678
