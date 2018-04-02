@@ -53,7 +53,7 @@ extension String {
         var patternIndex: Int = 0
         var indexes: [Int] = [Int]()
 
-        /* Pre-processing stage: computing the table for the shifts (through Z-Algorithm) */
+        /* 预处理代码： 通过 Z-Algorithm 算法计算移动用的表*/
         let zeta = ZetaAlgorithm(ptnr: ptnr)
 
         for patternIndex in (1 ..< patternLength).reversed() {
@@ -61,7 +61,7 @@ extension String {
             suffixPrefix[textIndex] = zeta![patternIndex]
         }
 
-        /* Search stage: scanning the text for pattern matching */
+        /* 查询代码：查找模式串匹配值 */
         textIndex = 0
         patternIndex = 0
 
@@ -102,9 +102,7 @@ extension String {
                     x
     suffixPrefix:   00000031
 
-We have a mismatch and we move on comparing `T[1]` and `P[0]`. We have to check if a pattern occurrence is present but there is not. So, we have to shift the pattern right and by doing so we have to check `suffixPrefix[1 - 1]`. Its value is `0` and we restart by comparing `T[1]` with `P[0]`. Again a mismath occurs, so we go on with `T[2]` and `P[0]`.
-
-比较后发现不匹配，下一步比较 `T[1]` 和 `P[0]` ，因此继续向右移动模式串，移动多少需要查询 `suffixPrefix[1 - 1]` 
+比较后发现不匹配，下一步比较 `T[1]` 和 `P[0]` ，不幸的是要检查模式串不一致，因此需要继续向右移动模式串，移动多少需要查询 `suffixPrefix[1 - 1]` 。如果值是 `0` ，需要再比较 `T[1]` 和 `P[0]` 。但还是不匹配，所以我们继续比较 `T[2]` 和 `P[0]`。 
 
                               1      
                     0123456789012345678
@@ -114,8 +112,9 @@ We have a mismatch and we move on comparing `T[1]` and `P[0]`. We have to check 
     patternIndex:     ^
     suffixPrefix:     00000031
 
-This time we have a match. And it continues until position `8`. Unfortunately the length of the match is not equal to the pattern length, we cannot report an occurrence. But we are still lucky because we can use the values computed in the `suffixPrefix` array now. In fact, the length of the match is `7`, and if we look at the element `suffixPrefix[7 - 1]` we discover that is `3`. This information tell us that that the prefix of `P` matches the suffix of the susbtring `T[0...8]`. So the `suffixPrefix` array guarantees us that the two substring match and that we do not have to compare their characters, so we can shift right the pattern for more than one character!
-The comparisons restart from `T[9]` and `P[3]`.  
+这次有相同的字符了，但也是至相同到第 `8` 位置，不幸的是匹配的长度与模式串长度并不相同，因此不能认为是相同的，但还是有办法的，我们可以用 `suffixPrefix` 数组存的值，匹配的长度是 `7`， 查看 `suffixPrefix[7-1]` 的值是 `3`。这个信息告诉我们 `P` 的前缀与 `T[0...8]` 的子字符串是有匹配。`suffixPrefix` 数组保证我们模式串有两个子字符串是与之匹配的，因此不用再进行比较，我们可以直接大幅向右移动模式串！
+
+从 `T[9]` 和 `P[3]` 重新比较。
 
                               1       
                     0123456789012345678
@@ -125,7 +124,7 @@ The comparisons restart from `T[9]` and `P[3]`.
     patternIndex:            ^
     suffixPrefix:         00000031
 
-They match so we continue the compares until position `13` where a misatch occurs beetwen charcter `G` and `A`. Just like before, we are lucky and we can use the `suffixPrefix` array to shift right the pattern.
+继续比较直到第 13 位置，发现 `G` 和 `A` 不匹配。像上面那样，继续根据 `suffixPrefix` 数组进行右移。
 
                               1       
                     0123456789012345678
@@ -135,7 +134,7 @@ They match so we continue the compares until position `13` where a misatch occur
     patternIndex:                ^
     suffixPrefix:             00000031
 
-Again, we have to compare. But this time the comparisons finally take us to an occurrence, at position `17 - 7 = 10`.
+再次进行比较，这次我们终于找到一个，从位置 `17 - 7 = 10`。
 
                               1       
                     0123456789012345678
@@ -145,18 +144,22 @@ Again, we have to compare. But this time the comparisons finally take us to an o
     patternIndex:                    ^
     suffixPrefix:             00000031
 
-The algorithm than tries to compare `T[18]` with `P[1]` (because we used the element `suffixPrefix[8 - 1] = 1`) but it fails and at the next iteration it ends its work.
+算法再继续比较 `T[18]` 和 `P[1]`，（因为 suffixPrefix[8 - 1] = 1），但是并不相同，在下次循环后也就停止计算了。
+
+预处理阶段只涉及到模式串，运行 Z-Algorithm 算法是线性的，只需要 `o(n)`，这里 `n` 是 `P` 的模式串长度。完成后，在查找阶段复杂度也不会超出文本 `T` 长度（设为 `m` ）。可以证明查找阶段的比较次数边界为 `2 * m`。所以 KMP 算法复杂度为 `O(n + m)`。
 
 
-The pre-processing stage involves only the pattern. The running time of the Z-Algorithm is linear and takes `O(n)`, where `n` is the length of the pattern `P`. After that, the search stage does not "overshoot" the length of the text `T` (call it `m`). It can be be proved that number of comparisons of the search stage is bounded by `2 * m`. The final running time of the Knuth-Morris-Pratt algorithm is `O(n + m)`.
+> 注意：如果你要执行 [KnuthMorrisPratt.swift](./KnuthMorrisPratt.swift) 需要拷贝  [Z-Algorithm](../Z-Algorithm/) 文件夹下的 [ZAlgorithm.swift](../Z-Algorithm/ZAlgorithm.swift)。 [KnuthMorrisPratt.playground](./KnuthMorrisPratt.playground)  已经包含 `Zeta` 函数。
+
+声明：这段代码是基于 1997年 CUP Dan Gusfield 的[《Algorithm on String, Trees and Sequences: Computer Science and Computational Biology》](https://books.google.it/books/about/Algorithms_on_Strings_Trees_and_Sequence.html?id=Ofw5w1yuD8kC&redir_esc=y) 手册。
+
+**作者 Matteo Dunnhofer，译者 KeithMorning**
 
 
-> **Note:** To execute the code in the [KnuthMorrisPratt.swift](./KnuthMorrisPratt.swift) you have to copy the [ZAlgorithm.swift](../Z-Algorithm/ZAlgorithm.swift) file contained in the [Z-Algorithm](../Z-Algorithm/) folder. The [KnuthMorrisPratt.playground](./KnuthMorrisPratt.playground) already includes the definition of the `Zeta` function.
 
-Credits: This code is based on the handbook ["Algorithm on String, Trees and Sequences: Computer Science and Computational Biology"](https://books.google.it/books/about/Algorithms_on_Strings_Trees_and_Sequence.html?id=Ofw5w1yuD8kC&redir_esc=y) by Dan Gusfield, Cambridge University Press, 1997.
+**译者注**：由于本文原文在分析 KMP 算法上面明显不够用(虽然加了好多注释，😓)，关键的 `Next` 数组算法又没说明白，想继续挖坑的同学，推荐以下三篇文章，绝对够用。
 
-*Written for Swift Algorithm Club by Matteo Dunnhofer*
+* [唐小喵的解释](https://www.cnblogs.com/tangzhengyue/p/4315393.html)
+* [孤~影的解释](http://www.cnblogs.com/yjiyjige/p/3263858.html)
+* [阮老师的解说](http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html)
 
-[](https://www.cnblogs.com/tangzhengyue/p/4315393.html)
-
-[](http://www.cnblogs.com/yjiyjige/p/3263858.html)
