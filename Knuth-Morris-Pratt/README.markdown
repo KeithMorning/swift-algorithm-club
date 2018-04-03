@@ -14,7 +14,7 @@ let concert = "🎼🎹🎹🎸🎸🎻🎻🎷🎺🎤👏👏👏"
 concert.indexesOf(ptnr: "🎻🎷")   // Output: [6]
 ```
 
-[Knuth-Morris-Pratt](https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm) 算法被公认是字符串匹配查找的最好算法之一。虽然  [Boyer-Moore](../Boyer-Moore/) 更受欢迎，但是这个算法更加简单，也同样只需要线性的时间复杂度。
+[Knuth-Morris-Pratt](https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm) 算法被公认是字符串匹配查找的最好算法之一。虽然  [Boyer-Moore](../Boyer-Moore-Horspool/) 更受欢迎，但是这个算法更加简单，也同样只需要线性的时间复杂度。
 
 这个算法后的思想和原来的[暴力字符串搜索算法](../Brute-Force%20String%20Search/) 没什么不同，KMP 和它同样将字符串从左到右依次比较，但是与之不同的是不会在字符串不匹配时移动一个字符，而是用了更聪明的方式移动模式串。实际上这个算法对模式串特征做了预处理，使得它获得足够的信息能跳过不必要的比较，所以可以移动更多的距离。
 
