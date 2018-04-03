@@ -1,29 +1,26 @@
-# Rabin-Karp string search algorithm
+# Rabin-Karp 字符串搜索算法
 
-The Rabin-Karp string search algorithm is used to search text for a pattern.
+Rabin-Karp 字符串搜索算法用用来搜索文本中的模式串。
 
-A practical application of the algorithm is detecting plagiarism. Given source material, the algorithm can rapidly search through a paper for instances of sentences from the source material, ignoring details such as case and punctuation. Because of the abundance of the sought strings, single-string searching algorithms are impractical.
+该算法的典型应用就是检测抄袭。给一篇原文，它可以忽略细节和标点，非常快的从一篇论文中找到原文中的的句子。对于大规模文本查找，逐字查找是不靠谱的。
 
-## Example
+## 举个例子
 
-Given a text of "The big dog jumped over the fox" and a search pattern of "ump" this will return 13.
-It starts by hashing "ump" then hashing "The".  If hashed don't match then it slides the window a character
-at a time (e.g. "he ") and subtracts out the previous hash from the "T".
+如果文本为 "The big dog jumped over the fox" ，模式串为 "ump"，查询的结果为 13。
 
-## Algorithm
+先对 "ump" 做哈希，然后再对 "The" 计算哈希值。如果不匹配，向前一次移动一个字符，比如这次为 "he "(注意这里有原文的空格)，并从前一次中减去 "T" 哈希值部分。
 
-The Rabin-Karp algorithm uses a sliding window the size of the search pattern.  It starts by hashing the search pattern, then
-hashing the first x characters of the text string where x is the length of the search pattern.  It then slides the window one character over and uses
-the previous hash value to calculate the new hash faster.  Only when it finds a hash that matches the hash of the search pattern will it compare
-the two strings it see if they are the same (to prevent a hash collision from producing a false positive).
+## 算法实现
 
-## The code
+Rabin-Karp 算法移动的步进为模式串的长度。它先对模式串取哈希，然后对文本前 x 个字符取哈希，这里的 x 为模式串的长度。它每次向前移动一个字符，并用之前的哈希值计算新的哈希值会使得更快。直到找到与模式串相同的哈希值，在比较两个字符是否是一样（为了避免哈希碰撞造成假象）。
 
-The major search method is next.  More implementation details are in rabin-karp.swift
+## 代码
+
+主代码如下，详细的实现请查看 rabin-karp.swift
 
 ```swift
 public func search(text: String , pattern: String) -> Int {
-    // convert to array of ints
+    // 将数组转为整形数组
     let patternArray = pattern.flatMap { $0.asInt }
     let textArray = text.flatMap { $0.asInt }
 
@@ -37,14 +34,14 @@ public func search(text: String , pattern: String) -> Int {
     let firstHash = hash(array: firstChars)
 
     if (patternHash == firstHash) {
-        // Verify this was not a hash collision
+        // 确认一下不是哈希冲突
         if firstChars == patternArray {
             return 0
         }
     }
 
     var prevHash = firstHash
-    // Now slide the window across the text to be searched
+    // 在被查询的文本中滑动
     for idx in 1...(textArray.count - patternArray.count) {
         endIdx = idx + (patternArray.count - 1)
         let window = Array(textArray[idx...endIdx])
@@ -63,17 +60,17 @@ public func search(text: String , pattern: String) -> Int {
 }
 ```
 
-This code can be tested in a playground using the following:
+在 playground 测试一下:
 
 ```swift
-  search(text: "The big dog jumped"", "ump")
+  search(text: "The big dog jumped", "ump")
 ```
 
-This will return 13 since ump is in the 13 position of the zero based string.
+结果返回 13，因为字符串从 0 开始计数，所以 ump 是在第 13 位置。
 
-## Additional Resources
+## 更多参考
 
 [Rabin-Karp Wikipedia](https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm)
 
 
-*Written by [Bill Barbour](https://github.com/brbatwork)*
+**作者 [Bill Barbour](https://github.com/brbatwork)， 译者 [KeithMorning](https://github.com/KeithMorning/)**
