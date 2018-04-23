@@ -1,26 +1,28 @@
-# Longest Common Subsequence
+# 最长公共子序列算法
 
-The Longest Common Subsequence (LCS) of two strings is the longest sequence of characters that appear in the same order in both strings.
+两个字符串的最长公共子序列（LCS）是指这两个字符串中最长的有相同顺序的子序列。
 
-For example the LCS of `"Hello World"` and `"Bonjour le monde"` is `"oorld"`. If you go through both strings from left-to-right, you'll find that the characters `o`, `o`, `r`, `l`, `d` appear in both strings in that order.
+举例说明一下，`"Hello World"` 和 `"Bonjour le monde"` 的 LCS 是 `"oorld"`。如果从左到右依次扫过字符串，你会发现 `o`、 `o`、 `r` 、`l`、 `d`  在两个字符串中出现的顺序是一样的。
 
-Other possible subsequences are `"ed"` and `"old"`, but these are all shorter than `"oorld"`. 
+其他的子序列为 `"ed"` 和 `"old"`，但是它们都比 `"oorld"` 要短。
 
-> **Note:** This should not be confused with the Longest Common Substring problem, where the characters must form a substring of both strings, i.e they have to be immediate neighbors. With a subsequence, it's OK if the characters are not right next to each other, but they must be in the same order.
+> 注意：不要和最长公共字符串混淆了，后者必须是两个字符串的子字符串，也就是字符是直接相邻的。但对公共序列来说，字符之间并不是连续，但是它们必须有相同的顺序。
 
-One way to find the LCS of two strings `a` and `b` is using dynamic programming and a backtracking strategy.
+计算两个字符串 `a` 和 `b` 的 LCS 方法之一是通过动态规划和回溯法。
 
-## Finding the length of the LCS with dynamic programming
 
-First, we want to find the length of the longest common subsequence between strings `a` and `b`. We're not looking for the actual subsequence yet, only how long it is.
 
-To determine the length of the LCS between all combinations of substrings of `a` and `b`, we can use a *dynamic programming* technique. Dynamic programming basically means that you compute all possibilities and store them inside a look-up table.
+## 通过动态规划计算 LCS 的长度
 
-> **Note:** During the following explanation, `n` is the length of string `a`, and `m` is the length of string `b`.
+首先，我们需要计算 `a`  和 `b` 最长的公共子序列，先不需要查找确切的子序列，只是确定长度是多少。
 
-To find the lengths of all possible subsequences, we use a helper function, `lcsLength(_:)`. This creates a matrix of size `(n+1)` by `(m+1)`, where `matrix[x][y]` is the length of the LCS between the substrings `a[0...x-1]` and `b[0...y-1]`.
+为了计算 `a` 和 `b` 所有子混合字符串 LCS 的长度，我们可以使用 **动态规划**技术。动态规划基本方法是计算出所有的可能并存入一个待查询的表中。
 
-Given strings `"ABCBX"` and `"ABDCAB"`, the output matrix of `lcsLength(_:)` is the following:
+> 注意：在下面介绍中， `n` 是 `a` 字符的长度, `m` 是 `b` 的字符长度。
+
+为了找出所有可能的子序列，先写一个帮助函数 `lcsLength(_:)`。这个函数会创建一个 `(n+1)` * `(m+1)` 的矩阵，这里 `matrix[x][y]` 是 字符串 `a[0...x-1]` 和 `b[0...y-1]` 的 LCS 长度。
+
+比如字符串如下 `"ABCBX"` 和 `"ABDCAB"` ，函数 `lcsLength(_:)` 矩阵输出如下：
 
 ```
 |   | Ø | A | B | D | C | A | B |
@@ -32,9 +34,9 @@ Given strings `"ABCBX"` and `"ABDCAB"`, the output matrix of `lcsLength(_:)` is 
 | X | 0 | 1 | 2 | 2 | 3 | 3 | 4 |
 ```
 
-In this example, if we look at `matrix[3][4]` we find the value `3`. This means the length of the LCS between `a[0...2]` and `b[0...3]`, or between `"ABC"` and `"ABDC"`, is 3. That is correct, because these two substrings have the subsequence `ABC` in common. (Note: the first row and column of the matrix are always filled with zeros.)
+在这个例子中，查看 `matrix[3][4]` 的值为 `3`。 这意味着子字符串 `a[0...2]` 和 `b[0...3]` 或者说 `"ABC"` 和`"ABDC"` LCS 的长度是 3。 这个值确实正确，因为两字符串有相同的子序列 `ABC`。（注意：第一行列的矩阵值用 0 填充。）
 
-Here is the source code for `lcsLength(_:)`; this lives in an extension on `String`:
+`lcsLength(_:)` 的源码如下，这段代码在 `String` 扩展中：
 
 ```swift
 func lcsLength(_ other: String) -> [[Int]] {
@@ -44,10 +46,10 @@ func lcsLength(_ other: String) -> [[Int]] {
   for (i, selfChar) in self.characters.enumerated() {
 	for (j, otherChar) in other.characters.enumerated() {
 	  if otherChar == selfChar {
-		// Common char found, add 1 to highest lcs found so far.
+        // 找到公共字符，当前 lcs 的最大长度加 1。
 		matrix[i+1][j+1] = matrix[i][j] + 1
 	  } else {
-		// Not a match, propagates highest lcs length found so far.
+        // 没有找到匹配的，接着使用当前最大的 lcs 长度
 		matrix[i+1][j+1] = max(matrix[i][j+1], matrix[i+1][j])
 	  }
 	}
@@ -57,9 +59,9 @@ func lcsLength(_ other: String) -> [[Int]] {
 }
 ```
 
-First, this creates a new matrix -- really a 2-dimensional array -- and fills it with zeros. Then it loops through both strings, `self` and `other`, and compares their characters in order to fill in the matrix. If two characters match, we increment the length of the subsequence. However, if two characters are different, then we "propagate" the highest LCS length found so far.
+首先，创建一个新的矩阵 —— 二维数组 —— 全部用零填充。然后在 `self` 和 `other` 两个字符串中查找，比较它们的字符串后按顺序填充到矩阵中。如果两个字符相同，增大序列的长度。如果两个字符不同，“复制” 当前最大 LCS。
 
-Let's say the following is the current situation:
+比如如下的情况：
 
 ```
 |   | Ø | A | B | D | C | A | B |
@@ -71,7 +73,7 @@ Let's say the following is the current situation:
 | X | 0 |   |   |   |   |   |   |
 ```
 
-The `*` marks the two characters we're currently comparing, `C` versus `D`. These characters are not the same, so we propagate the highest length we've seen so far, which is `2`:
+`*` 表示我们当前的比较的两个字符 `C` 和 `D` 。这两个字符不相同，因此用之前找到的最大长度 `2` 作为结果：
 
 ```
 |   | Ø | A | B | D | C | A | B |
@@ -83,7 +85,7 @@ The `*` marks the two characters we're currently comparing, `C` versus `D`. Thes
 | X | 0 |   |   |   |   |   |   |
 ```
 
-Now we compare `C` with `C`. These are equal, and we increment the length to `3`:
+现在比较 `C` 和 `C`。 他们两个相同，因此增加长度到 `3`：
 
 ```
 |   | Ø | A | B | D | C | A | B |
@@ -95,13 +97,17 @@ Now we compare `C` with `C`. These are equal, and we increment the length to `3`
 | X | 0 |   |   |   |   |   |   |
 ```
 
-And so on... this is how `lcsLength(_:)` fills in the entire matrix.
+一次类推，这就是 `lcsLength(_:)` 如何计算填充整个矩阵的过程。
 
-## Backtracking to find the actual subsequence
+## 回溯查找出序列
 
-So far we've calculated the length of every possible subsequence. The length of the longest subsequence is found in the bottom-left corner of matrix, at `matrix[n+1][m+1]`. In the above example it is 4, so the LCS consists of 4 characters.
+目前我们计算出每个可能的序列的长度。最长的序列可以再矩阵的右下角，位置为 `matrix[n+1][m+1]`。在上面的例子值为 4 ，因此 LCS 包含 4 个字符。 
 
 Having the length of every combination of substrings makes it possible to determine *which* characters are part of the LCS itself by using a backtracking strategy.
+
+计算出全部公共子序列的长度后
+
+
 
 Backtracking starts at `matrix[n+1][m+1]` and walks up and left (in this priority) looking for changes that do not indicate a simple propagation.
 
@@ -154,7 +160,7 @@ func backtrack(_ matrix: [[Int]]) -> String {
   
   return String(lcs.characters.reversed())
 }
-```  
+```
 
 This backtracks from `matrix[n+1][m+1]` (bottom-right corner) to `matrix[1][1]` (top-right corner), looking for characters that are common to both strings. It adds those characters to a new string, `lcs`.
 
