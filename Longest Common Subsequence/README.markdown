@@ -103,13 +103,9 @@ func lcsLength(_ other: String) -> [[Int]] {
 
 目前我们计算出每个可能的序列的长度。最长的序列可以再矩阵的右下角，位置为 `matrix[n+1][m+1]`。在上面的例子值为 4 ，因此 LCS 包含 4 个字符。 
 
-Having the length of every combination of substrings makes it possible to determine *which* characters are part of the LCS itself by using a backtracking strategy.
+计算出全部公共子序列的长度后就可以通过回溯法计算出**那些**字符是 LCS 的组成部分。
 
-计算出全部公共子序列的长度后
-
-
-
-Backtracking starts at `matrix[n+1][m+1]` and walks up and left (in this priority) looking for changes that do not indicate a simple propagation.
+回溯法从 `matrix[n+1][m+1]` 开始，向左边和上边(以此为优先级)方向搜寻没有简单传播的变化。
 
 ```
 |   |  Ø|  A|  B|  D|  C|  A|  B|
@@ -121,13 +117,13 @@ Backtracking starts at `matrix[n+1][m+1]` and walks up and left (in this priorit
 | X |  0|  1|  2|  2|  3|  3|↑ 4|
 ```
 
-Each `↖` move indicates a character (in row/column header) that is part of the LCS.
+每一个 `↖` 代表一个属于 LCS 的字符（在行/列的头部）。
 
-If the number on the left and above are different than the number in the current cell, no propagation happened. In that case `matrix[i][j]` indicates a common char between the strings `a` and `b`, so the characters at `a[i - 1]` and `b[j - 1]` are part of the LCS that we're looking for.
+如果左边和上边的数字与当前单元的数字不同，那就没有产生传播。这样的情况下 `matrix[i][j]` 代表字符串 `a` 和 `b` 的一个公共字符，因此 `a[i-1]` 和 `b[j-1]` 就是正在寻找的 LCS 的组成部分。
 
-One thing to notice is, as it's running backwards, the LCS is built in reverse order. Before returning, the result is reversed to reflect the actual LCS.
+需要注意的是，因为是反向运行的， LCS 是倒序组成的，在返回结果之前，需要把结果做反向排序后才是正确的 LCS。
 
-Here is the backtracking code:
+下面是回溯的代码：
 
 ```swift
 func backtrack(_ matrix: [[Int]]) -> String {
@@ -139,17 +135,17 @@ func backtrack(_ matrix: [[Int]]) -> String {
   var lcs = String()
   
   while i >= 1 && j >= 1 {
-	// Indicates propagation without change: no new char was added to lcs.
+    // 表示传播没有变化：没有新字符添加到 lcs
 	if matrix[i][j] == matrix[i][j - 1] {
 	  j -= 1
 	}
-	// Indicates propagation without change: no new char was added to lcs.
+    // 表示传播没有变化：没有新字符添加到 lcs
 	else if matrix[i][j] == matrix[i - 1][j] {
 	  i -= 1
 	  charInSequence = self.index(before: charInSequence)
 	}
-	// Value on the left and above are different than current cell.
-	// This means 1 was added to lcs length.
+    // 左边和上面的字符与当前单元均不相同
+    // 意味着 lcs 长度加1
 	else {
 	  i -= 1
 	  j -= 1
@@ -162,9 +158,11 @@ func backtrack(_ matrix: [[Int]]) -> String {
 }
 ```
 
-This backtracks from `matrix[n+1][m+1]` (bottom-right corner) to `matrix[1][1]` (top-right corner), looking for characters that are common to both strings. It adds those characters to a new string, `lcs`.
+回溯法从 `matrix[n+1][m+1]`（右下角）到 `matrix[1][1]` （左上角），查找两个字符的公共字符串，添加这些字符到新字符串 `lcs` 中。
 
 The `charInSequence` variable is an index into the string given by `self`. Initially this points to the last character of the string. Each time we decrement `i`, we also move back `charInSequence`. When the two characters are found to be equal, we add the character at `self[charInSequence]` to the new `lcs` string. (We can't just write `self[i]` because `i` may not map to the current position inside the Swift string.)
+
+`charInSequence`  变量是 `self` 字符串的索引。开始时指向字符串的最后一个位置。每次我们减小 `i` ，也会将 `charInSequence` 回退。
 
 Due to backtracking, characters are added in reverse order, so at the end of the function we call `reversed()` to put the string in the right order. (Appending new characters to the end of the string and then reversing it once is faster than always inserting the characters at the front of the string.)
 
