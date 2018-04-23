@@ -160,15 +160,13 @@ func backtrack(_ matrix: [[Int]]) -> String {
 
 回溯法从 `matrix[n+1][m+1]`（右下角）到 `matrix[1][1]` （左上角），查找两个字符的公共字符串，添加这些字符到新字符串 `lcs` 中。
 
-The `charInSequence` variable is an index into the string given by `self`. Initially this points to the last character of the string. Each time we decrement `i`, we also move back `charInSequence`. When the two characters are found to be equal, we add the character at `self[charInSequence]` to the new `lcs` string. (We can't just write `self[i]` because `i` may not map to the current position inside the Swift string.)
+`charInSequence`  变量是 `self` 字符串的索引。开始时指向字符串的最后一个位置。每次我们减小 `i` ，也会将 `charInSequence` 回退。当两个字符相同时，将处于 `self[charInSequence]` 的字符添加到新 `lcs` 字符串中。（不能直接写 `self[i]` 因为 `i` 可能在 Swift 字符串中并不指向此位置。）
 
-`charInSequence`  变量是 `self` 字符串的索引。开始时指向字符串的最后一个位置。每次我们减小 `i` ，也会将 `charInSequence` 回退。
+由于回溯法是倒序添加字符，所以在函数最后调用 `reversed()` 把字符串调整成正确的顺序。（每次添加到字符尾部然后一次性反过来要比每次把字符插到字符串的前面要快。）
 
-Due to backtracking, characters are added in reverse order, so at the end of the function we call `reversed()` to put the string in the right order. (Appending new characters to the end of the string and then reversing it once is faster than always inserting the characters at the front of the string.)
+## 整合一下
 
-## Putting it all together
-
-To find the LCS between two strings, we first call `lcsLength(_:)` and then `backtrack(_:)`:
+先调用 `lcsLength(_:)` 找到两个字符串的 LCS，然后再调用 `backtrack(_:)`：
 
 ```swift
 extension String {
@@ -187,9 +185,9 @@ extension String {
 }
 ```
 
-To keep everything tidy, the two helper functions are nested inside the main `longestCommonSubsequence()` function.
+为了保持代码整洁，两个帮助函数在主函数 `longestCommonSubsequence()` 中折叠起来了。
 
-Here's how you could try it out in a Playground:
+在 Playground 中试试下面代码：
 
 ```swift
 let a = "ABCBX"
@@ -202,4 +200,4 @@ a.longestCommonSubsequence(c)   // "" (no common subsequence)
 "Hello World".longestCommonSubsequence("Bonjour le monde")   // "oorld"
 ```
 
-*Written for Swift Algorithm Club by Pedro Vereza*
+**作者 Pedro Vereza， 译者 KeithMorning**
