@@ -1,10 +1,10 @@
-# Z-Algorithm String Search
+# Z-Algorithm 字符串搜索
 
-Goal: Write a simple linear-time string matching algorithm in Swift that returns the indexes of all the occurrencies of a given pattern. 
- 
-In other words, we want to implement an `indexesOf(pattern: String)` extension on `String` that returns an array `[Int]` of integers, representing all occurrences' indexes of the search pattern, or `nil` if the pattern could not be found inside the string.
- 
-For example:
+目标：给定一个模式串，用 Swift 写一个线性时间复杂度的匹配算法，返回在字符串中出现的位置。
+
+换而言之，我们需要实现一个 `String` 的扩展方法 `indexsOf(pattern:String)`, 能够返回一个 `[Int]` 数组代表所有模式串出现的索引位置，或者返回 `nil` 如果没有在字符串中找到。
+
+举个例子:
 
 ```swift
 let str = "Hello, playground!"
@@ -14,18 +14,18 @@ let traffic = "🚗🚙🚌🚕🚑🚐🚗🚒🚚🚎🚛🚐🏎🚜🚗🏍�
 traffic.indexesOf(pattern: "🚑") // Output: [4, 21]
 ```
 
-Many string search algorithms use a pre-processing function to compute a table that will be used in successive stage. This table can save some time during the pattern search stage because it allows to avoid un-needed characters comparisons. The [Z-Algorithm]() is one of these functions. It borns as a pattern pre-processing function (this is its role in the [Knuth-Morris-Pratt algorithm](../Knuth-Morris-Pratt/) and others) but, just like we will show here, it can be used also as a single string search algorithm.
+许多字符串搜索算法都会有一个预处理函数计算一个表用在随后的计算过程中。这个表可以可以节省模式串匹配阶段的一些时间，因为可以避免一些不必要的字符串比较。Z-Algorithm 就是众多预处理函数的一种。尽管它生为预处理函数（在 [KMP](../Knuth-Morris-Pratt/) 算法和其他算法中就承担了一个这样的角色），但是本文将介绍如何将它作为字符串搜索算法使用。
 
-### Z-Algorithm as pattern pre-processor
+### Z-Algorithm 模式串的前缀
 
-As we said, the Z-Algorithm is foremost an algorithm that process a pattern in order to calculate a skip-comparisons-table.
-The computation of the Z-Algorithm over a pattern `P` produces an array (called `Z` in the literature) of integers in which each element, call it `Z[i]`, represents the length of the longest substring of `P` that starts at `i` and matches a prefix of `P`. In simpler words, `Z[i]` records the longest prefix of `P[i...|P|]` that matches a prefix of `P`. As an example, let's consider `P = "ffgtrhghhffgtggfredg"`. We have that `Z[5] = 0 (f...h...)`, `Z[9] = 4 (ffgtr...ffgtg...)` and `Z[15] = 1 (ff...fr...)`.
+正如本文所说，Z-Algorithm 是算法开头用来处理模式串的用来计算出一个跳过非必要比较的表。Z-Algorithm 计算模式串后得到一个整数数组（文献中称之为 `Z`）每个元素称作 `Z[i]`, 表示 `P` 的以 `i` 开始的最长子字符串的前缀与 `P` 的前缀相匹配的长度。简而言之就是 `Z[i]` 记录了 `P[i...|P|]` 最长的与 `P` 前缀相同的前缀。举个例子，假设 `P = "ffgtrhghhffgtggfredg"`。那么 `z[5] =0 (f...h...)`，`z[9] = 4 (ffgtr...ffgtg...)` 和 `z[15] = 1 (ff..fr..)`。（译者注：好吧，这个例子其实很难看，相信你可能数的眼都花了，这里 `z[5] = hghhffgtggfredg` 与原字符串比较前缀一个都没有所以结果为0，而 `z[9] = ffgtggfredg` 与原字符串比较一下结果为 `ffgt` 相同，结果为 4。）
 
-But how do we compute `Z`? Before we describe the algorithm we must indroduce the concept of Z-box. A Z-box is a pair `(left, right)` used during the computation that records the substring of maximal length that occurs also as a prefix of `P`. The two indices `left` and `right` represent, respectively, the left-end index and the right-end index of this substring. 
-The definition of the Z-Algorithm is inductive and it computes the elements of the array for every position `k` in the pattern, starting from `k = 1`. The following values (`Z[k + 1]`, `Z[k + 2]`, ...) are computed after `Z[k]`. The idea behind the algorithm is that previously computed values can speed up the calculus of `Z[k + 1]`, avoiding some character comparisons that were already done before. Consider this example: suppose we are at iteration `k = 100`, so we are analyzing position `100` of the pattern. All the values between `Z[1]` and `Z[99]` were correctly computed and `left = 70` and `right = 120`. This means that there is a substring of length `51` starting at position `70` and ending at position `120` that matches the prefix of the pattern/string we are considering. Reasoning on it a little bit we can say that the substring of length `21` starting at position `100` matches the substring of length `21` starting at position `30` of the pattern (because we are inside a substring that matches a prefix of the pattern). So we can use `Z[30]` to compute `Z[100]` without additional character comparisons.
-This a simple description of the idea that is behind this algorithm. There are a few cases to manage when the use of pre-computed values cannot be directly applied and some comparisons are to be made.
+但是我们如何计算 `Z `? 在介绍这个算法之前，我们需要先介绍一个下 Z-box 这个概念。 一个 Z-Box  含有 `(left,right)` 一对值，用来在计算过程中记录子字符串与 `P` 前缀相同的长度。`left` 和 `right` 这两个索引值各自代表子字符串的左边界和右边界索引。Z-Algorithm 定义比较感性，它从 `k-1` 开始，计算了模式串中每个位置 `k`。算法被后的思想是之前计算的值可以加快 `Z[k + 1]` 的演算，避免重复已经比较过的。思考一下：如果迭代到 `k = 100`, 分析模式串 `100` 位置如何计算。所有的 `Z[1]` 到 `Z[99]` 已经计算过并且 `left = 70`, `right = 120`。这意味着子字符串长度为 `51` 且是从 `70` 开始到 `120`结束，而且还是与模式串前缀相匹配的。推理一下后可以认为从 `100` 开始，长度为 `21` 的字符与模式串中从 `30` 开始长度为 `21` 的子字符串相匹配（因为我们是在一个与模式串前缀相匹配的子字符串中）。因此我们可以避免额外的比较直接用 `Z[30]` 来计算 `Z[100]`。
 
-Here is the code of the function that computes the Z-array:
+这是这个算法背后的简单思想。无法通过之前计算的值直接进行处理的情况很少，有一些比较需要处理一下。
+
+下面是计算 `Z-array` 的代码：
+
 ```swift
 func ZetaAlgorithm(ptrn: String) -> [Int]? {
 
@@ -86,8 +86,8 @@ func ZetaAlgorithm(ptrn: String) -> [Int]? {
 ```
 
 Let's make an example reasoning with the code above. Let's consider the string `P = “abababbb"`. The algorithm begins with `k = 1`, `left = right = 0`. So, no Z-box is "active" and thus, because `k > right` we start with the character comparisons beetwen `P[1]` and `P[0]`.
-  
-    
+
+
        01234567
     k:  x
        abababbb
