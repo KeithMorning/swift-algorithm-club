@@ -61,7 +61,7 @@
 - [Knuth-Morris-Pratt 算法](Knuth-Morris-Pratt/) - 一个线性复杂度字符串搜索算法（KMP算法），通过模式字符进行匹配返回所有的字符串的位置
 - [Rabin-Karp 算法](Rabin-Karp/) - 通过哈希算法快速搜索
 - [最长公共子序列算法](Longest%20Common%20Subsequence/)－找到两个字符串中的最长公共子序列。
-- [*Z-Algorithm](Z-Algorithm/) 在一个字符串中找到所有的模式字符，并返回模式字符在字符串中的开始位置
+- [Z-Algorithm](Z-Algorithm/) 在一个字符串中找到所有的模式字符，并返回模式字符在字符串中的开始位置
 
 ### 排序算法
 
@@ -248,4 +248,4 @@ Swift算法俱乐部由 [算法贡献者](https://github.com/rwenderlich/swift-a
 
 我们所有提交的 pull request 都是通过这个平台，所有代码和文章因此都是遵循该许可的。 根据该许可，Razeware, LLC 和其他人都对相关的文档保留权利。你可以[这里](https://github.com/raywenderlich/swift-algorithm-club/blob/master/LICENSE.txt)找到许可文档。
 
-> 所有中文文档的翻译来自[Swift 算法叙缘](https://github.com/raywenderlich/swift-algorithm-club)，因此也将遵循原项目协议
+> 所有中文文档的翻译来自[Swift 算法学院](https://github.com/raywenderlich/swift-algorithm-club)，因此也将遵循原项目协议
