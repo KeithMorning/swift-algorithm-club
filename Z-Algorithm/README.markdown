@@ -124,16 +124,16 @@ Z-Algorithm 算法是线性时间复杂度，进一步说，Z-Algorithm 计算�
 
 字符串预处理Z-Algorithm 算法实现在 [ZAlgorithm.swift](./ZAlgorithm.swift) 文件中。
 
-### Z-Algorithm as string search algorithm 
+### Z-Algorithm 字符串搜索算法 
 
-The Z-Algorithm discussed above leads to the simplest linear-time string matching algorithm. To obtain it, we have to simply concatenate the pattern `P` and text `T` in a string `S = P$T` where `$` is a character that does not appear neither in `P` nor `T`. Then we run the algorithm on `S` obtaining the Z-array. All we have to do now is scan the Z-array looking for elements equal to `n` (which is the pattern length). When we find such value we can report an occurrence.
+上面讨论的 Z-Algorithm 是最简单的线性时间复杂度的字符串匹配算法。只需要将模式串 `P` 和 文本 `T` 连接到一个字符中 `S = P$T`， 这里 `$` 是一个不在 `P` 或者 `T` 中的字符。用上面的算法计算 `S` 得到 Z 数组。现在只需要遍历一下 Z 找到等于 `n` （模式串长度）的元素。如果找到了就算找到了。
 
 ```swift
 extension String {
 
     func indexesOf(pattern: String) -> [Int]? {
         let patternLength: Int = pattern.characters.count
-        /* Let's calculate the Z-Algorithm on the concatenation of pattern and text */
+        /* 用 Z-Algorithm 计算模式串和文本连接后的字符串 */
         let zeta = ZetaAlgorithm(ptrn: pattern + "💲" + self)
 
         guard zeta != nil else {
@@ -142,7 +142,7 @@ extension String {
 
         var indexes: [Int] = [Int]()
 
-        /* Scan the zeta array to find matched patterns */
+        /* 遍历 zeta 数组尝试找匹配的模式串 */
         for i in 0 ..< zeta!.count {
             if zeta![i] == patternLength {
                 indexes.append(i - patternLength - 1)
@@ -158,7 +158,7 @@ extension String {
 }
 ```
 
-Let's make an example. Let `P = “CATA“` and `T = "GAGAACATACATGACCAT"` be the pattern and the text. Let's concatenate them with the character `$`. We have the string `S = "CATA$GAGAACATACATGACCAT"`. After computing the Z-Algorithm on `S` we obtain:
+举个例子吧，令 `P = “CATA”` ，`T = "GAGAACATACATGACCAT"` 作为模式串和待查文本。把他们用 `$` 连接起来，得到 `S =  "CATA$GAGAACATACATGACCAT"`。用算法计算后得到如下结果：
 
                 1         2
       01234567890123456789012
@@ -166,11 +166,10 @@ Let's make an example. Let `P = “CATA“` and `T = "GAGAACATACATGACCAT"` be th
     Z 00000000004000300001300
                 ^
 
-We scan the Z-array and at position `10` we find `Z[10] = 4 = n`. So we can report a match occuring at text position `10 - n - 1 = 5`.
+遍历 Z 数组在 `10` 的位置我们找到 `Z[10] = 4 = n`。因此可以认为在文本 `10 - n - 1 = 5` 的位置找到了匹配的字符串。
 
-As said before, the complexity of this algorithm is linear. Defining `n` and `m` as pattern and text lengths, the final complexity we obtain is `O(n + m + 1) = O(n + m)`.
+正如之前说的那样，这个算法复杂度是线性的。定义`n` 和 `m` 作为模式串和文本的长度。最后的得到的复杂度为 `O(n + m + 1) = O(n + m)`。
 
+声明：本代码基于1997年剑桥大学出版社 Dan Gusfield 编写的[ "Algorithm on String, Trees and Sequences: Computer Science and Computational Biology"](https://books.google.it/books/about/Algorithms_on_Strings_Trees_and_Sequence.html?id=Ofw5w1yuD8kC&redir_esc=y)  手册。
 
-Credits: This code is based on the handbook ["Algorithm on String, Trees and Sequences: Computer Science and Computational Biology"](https://books.google.it/books/about/Algorithms_on_Strings_Trees_and_Sequence.html?id=Ofw5w1yuD8kC&redir_esc=y) by Dan Gusfield, Cambridge University Press, 1997. 
-
-*Written for Swift Algorithm Club by Matteo Dunnhofer*
+**作者 Matteo Dunnhofer ，译者 [KeithMorning](https://github.com/KeithMorning/swift-algorithm-club-cn)**
