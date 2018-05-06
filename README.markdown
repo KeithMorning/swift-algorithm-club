@@ -79,6 +79,10 @@
 - [归并排序](Merge%20Sort/)
 - [*堆排序](Heap%20Sort/)
 
+混合排序:
+
+- [内省排序](Introsort/)
+
 特殊的排序算法
 
 - [*计数排序](Counting%20Sort/)
@@ -163,7 +167,9 @@
 - [*线索二叉树](Threaded%20Binary%20Tree/) - 一种二叉搜索树通过额外的数据加快遍历并降低消耗
 - [*线段树](Segment%20Tree/)－能够快速地对某区间进行计算。
   - [Lazy Propagation](https://github.com/raywenderlich/swift-algorithm-club/tree/master/Segment%20Tree/LazyPropagation)
+
 - k-d 树
+- [稀疏表](Sparse%20Table/) 又一个可以对数组部分做计算的数据结构，但是这次可以更快！
 - [*堆](Heap/)－存储在一维数组中的二叉树，所以它不需要使用指针。很适合做为优先队列使用。
 - 斐波那契堆
 - [*字典树](Trie/) - 一种特殊类型的树结构用来保存关联数据的结构
@@ -207,6 +213,23 @@
 - [*寻找回文串](Palindromes/)
 - [*哲学家进餐问题](DiningPhilosophers/)
 - [*扔🥚问题](Egg%20Drop%20Problem/)
+- [*编码和解码二叉树](Encode%20and%20Decode%20Tree/)
+
+
+## Raywenderlich 书籍推荐
+
+喜欢本系列？可以购买 Swift 算法学院出品的 [Data Structures & Algorithms in Swift](https://store.raywenderlich.com/products/data-structures-and-algorithms-in-swift)。
+
+![Data Structures & Algorithms in Swift Book](Images/DataStructuresAndAlgorithmsInSwiftBook.png)
+
+你可以从像链表，队列，栈这些基本的数据机构开始，学习如何用 Swift 语言的方式实现他们。然后进阶实现各种类型的树，以及各种特定用途的树如二叉树， AVL 树，二分查找树和字典树等。
+
+学习比冒泡，插入排序更好的算法，如归并排序、基数排序、堆排序和快速排序。学习构建有向图和无向图以及带权重的图来表示现世界中的模型，用广度优先算法、深度优先算法、Dijkstra Prim 算法高效的遍历图和树，在网络中找出最短路径和使用最低代价。
+
+在书的最后，用数据结构和算法实战解决一些通用问题，这样你就踏上自己开发高效算法的历程啦！
+
+
+放个链接在此，[raywenderlich.com store](https://store.raywenderlich.com/products/data-structures-and-algorithms-in-swift).
 
 ## 学无止境！
 

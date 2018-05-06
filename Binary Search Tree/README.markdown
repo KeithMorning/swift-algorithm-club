@@ -382,7 +382,7 @@ tree.toArray()   // [1, 2, 5, 7, 9, 10]
 先定义一些帮助函数，让代码更加易读：
 
 ```swift
-  private func reconnectParentToNode(node: BinarySearchTree?) {
+  private func reconnectParentTo(node: BinarySearchTree?) {
     if let parent = parent {
       if isLeftChild {
         parent.left = node

@@ -8,7 +8,7 @@
 ```swift
 let numbers = [11, 59, 3, 2, 53, 17, 31, 7, 19, 67, 47, 13, 37, 61, 29, 43, 5, 41, 23]
 
-numbers.indexOf(43)  // returns 15
+numbers.index(of: 43)  // returns 15
 ```
 
 SWift 自带的 `indexOf()` 函数用的是[线性查找](../Linear%20Search/). 代码如下：
