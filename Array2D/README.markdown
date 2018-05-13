@@ -112,8 +112,6 @@ let myCookie = cookies[column, row]
 cookies[column, row] = newCookie
 ```
 
-Internally, `Array2D` uses a single one-dimensional array to store the data. The index of an object in that array is given by `(row x numberOfColumns) + column`, but as a user of `Array2D`, you only need to think in terms of "column" and "row", and the details will be done by `Array2D`. This is the advantage of wrapping primitive types into a wrapper class or struct.
-
 实际上 `Array2D` 内部用了一个一维的数组来保存数据。 数据在数组中的位置用 `(row x numberOfColumns) + column` 来表示，但是 `Array2D` 的使用者只关心 “column” 和 “row”，所有的工作由 `Array2D` 来实现。 这就是类或结构体封装原始类型的优点。
 
 **作者 Matthijs Hollemans，译者 KeithMorning**
