@@ -28,8 +28,7 @@ traffic.indexesOf(pattern: "🚑") // Output: [4, 21]
 
 ```swift
 func ZetaAlgorithm(ptrn: String) -> [Int]? {
-
-    let pattern = Array(ptrn.characters)
+    let pattern = Array(ptrn)
     let patternLength: Int = pattern.count
 
     guard patternLength > 0 else {
@@ -132,7 +131,7 @@ Z-Algorithm 算法是线性时间复杂度，进一步说，Z-Algorithm 计算�
 extension String {
 
     func indexesOf(pattern: String) -> [Int]? {
-        let patternLength: Int = pattern.characters.count
+        let patternLength: Int = pattern.count
         /* 用 Z-Algorithm 计算模式串和文本连接后的字符串 */
         let zeta = ZetaAlgorithm(ptrn: pattern + "💲" + self)
 

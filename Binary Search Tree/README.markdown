@@ -626,8 +626,8 @@ public enum BinarySearchTree<T: Comparable> {
 
   public var height: Int {
     switch self {
-    case .Empty: return 0
-    case .Leaf: return 1
+    case .Empty: return -1
+    case .Leaf: return 0
     case let .Node(left, _, right): return 1 + max(left.height, right.height)
     }
   }

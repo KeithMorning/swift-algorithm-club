@@ -35,13 +35,13 @@ animals.indexOf(pattern: "🐮")
 ```swift
 extension String {
     func index(of pattern: String) -> Index? {
-      //缓存搜索模式串的长度，因为我们以后会多次使用它，计算一次比较耗时。
-        let patternLength = pattern.characters.count
-        guard patternLength > 0, patternLength <= characters.count else { return nil }
+        //缓存搜索模式串的长度，因为我们以后会多次使用它，计算一次比较耗时。
+        let patternLength = pattern.count
+        guard patternLength > 0, patternLength <= count else { return nil }
 
       // 创建跳表，当模式串中的一个字符被找到后决定跳多远
         var skipTable = [Character: Int]()
-        for (i, c) in pattern.characters.enumerated() {
+        for (i, c) in pattern.enumerated() {
             skipTable[c] = patternLength - i - 1
         }
 
@@ -149,12 +149,12 @@ d: 0
 extension String {
     func index(of pattern: String) -> Index? {
         //缓存搜索模式串的长度，因为我们以后会多次使用它，计算一次比较耗时。
-        let patternLength = pattern.characters.count
+        let patternLength = pattern.count
         guard patternLength > 0, patternLength <= characters.count else { return nil }
 
         // 创建跳表，当模式串中的一个字符被找到后决定跳多远
         var skipTable = [Character: Int]()
-        for (i, c) in pattern.characters.enumerated() {
+        for (i, c) in pattern.enumerated() {
             skipTable[c] = patternLength - i - 1
         }
 

@@ -91,9 +91,9 @@ func mergeSort(_ array: [Int]) -> [Int] {
    >
    > ```
    >
-   > ​
+   > 
    >
-   > ​
+   > 
    >
    > ​              
 
@@ -107,6 +107,7 @@ func merge(leftPile: [Int], rightPile: [Int]) -> [Int] {
 
   // 2
   var orderedPile = [Int]()
+  orderedPile.reserveCapacity(leftPile.count + rightPile.count)
 
   // 3
   while leftIndex < leftPile.count && rightIndex < rightPile.count {
@@ -138,11 +139,9 @@ func merge(leftPile: [Int], rightPile: [Int]) -> [Int] {
   return orderedPile
 }
 ```
-
 看起来可能比较抓狂，其实很简单：
-
 1. 合并时候你需要用两个位置数跟踪两个数组
-2. 目前合并用的新数组是空的，以后会慢慢把其他数组中元素添加进来。
+2. 目前合并用的新数组是空的，但是随后你会将其他数组中元素补充进来。因为已知这个数组填充结束需要的元素数量，需要保持此大小容量以避免额外的开销。
 3. 这个 while 循环通过取左右数组更小的值，把它放入 `orderedPile` 中。（从那边取值后，那边的位置数就+1，译者补充）
 4. 经过第一个循环后， `leftPile` 或者 `rightPile` 肯定有一个会完全合并入 `orderedPile` 中。 所以就不用在进行比较了，直接把剩余的数组放入 `orderedPile` 中即可。
 

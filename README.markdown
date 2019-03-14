@@ -13,8 +13,7 @@
 
 这个项目的目的是**解释各种算法的工作方式**。所以我们主要关注代码的清晰性和可读性，而不是为了产出一个可复用的库，让读者可以直接拖进自己的工程使用。换句话说，绝大多数的代码都是可以用于实际的项目中的，不过需要你根据自己的项目需求进行一些修整。
 
-所有的代码都是兼容 **Xcode 9** 以及 **Swift 4** 的。如果 Swift 有更新，我们也会及时跟进。
-
+所有的代码都是兼容 **Xcode 10** 以及 **Swift 4.2** 的。如果 Swift 有更新，我们也会及时跟进。
 这个项目目前正在进行中。更多的算法将被加入，敬请期待。:-)
 
 :heart_eyes:**欢迎提供建议和贡献！**:heart_eyes:
@@ -106,7 +105,8 @@
 - [*凸包算法](Convex%20Hull/)
 - [*米勒-拉宾素性测试](Miller-Rabin%20Primality%20Test/) 这是一个素数吗？
 - [*换硬币数量最小问题](MinimumCoinChange/) 一个动态规划的例子
-
+- [*遗传进化算法](Genetic/).  一个简单的例子用来展现一个数值仿照生物进化，如何慢慢突变到自己理想值。
+- [* Myers 差分算法](Myers%20Difference%20Algorithm/). 求两个序列的最长公共子序列。
 ### 数学算法
 
 - [*最大公约数算法(GCD)](GCD/)－特殊福利：最小公倍数算法。
@@ -124,7 +124,9 @@
 - 逻辑回归
 - 神经网络
 - 网页排名算法
-- [*朴素贝叶斯算法](Naive%20Bayes%20Classifier/))
+- [*朴素贝叶斯算法](Naive%20Bayes%20Classifier/)
+- [*模拟退火算法](Simulated%20annealing/) 是一种通用概率演算法，用来在一个大的搜寻空间内找寻命题的最优解。
+
 ## 数据结构
 
 对于特定的任务，数据结构的选择需要基于以下几点考量。
@@ -261,9 +263,10 @@
 ## 声明
 
 Swift算法俱乐部最初是由 [Matthijs Hollemans](https://github.com/hollance) 创建的。
-现在由 [Vincent Ngo](https://www.raywenderlich.com/u/jomoka), [Kelvin Lau](https://github.com/kelvinlauKL) 和 [Ross O'brien](https://www.raywenderlich.com/u/narrativium) 进行维护.
+现在由 [Vincent Ngo](https://www.raywenderlich.com/u/jomoka), [Kelvin Lau](https://github.com/kelvinlauKL) 和 [Richard Ash](https://github.com/richard-ash) 进行维护.
 
 Swift算法俱乐部由 [算法贡献者](https://github.com/rwenderlich/swift-algorithm-club/graphs/contributors) 和[raywenderlich.com](https://www.raywenderlich.com)社区大力支持。 我们一直在寻找联盟者，为什么不[加入](.github/CONTRIBUTING.md)呢？:]
+
 
 ## 许可(License)
 
