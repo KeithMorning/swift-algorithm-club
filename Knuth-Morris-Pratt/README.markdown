@@ -91,7 +91,7 @@ extension String {
 }
 ```
 
-下面让我们解释一下上面的代码。如果 `P = "ACTGACTA"`，`suffixPrefix` 的结果为 `[0, 0, 0, 0, 0, 0, 3, 1]` ，文本为 `"GCACTGACTGACTGACTAG"`。算法开始的比较过程如下，先比较 `T[0]` 和 `P[0]`。
+下面让我们解释一下上面的代码。如果 `P = "ACTGACTA"`，`suffixPrefix` 的结果为 `[0, 0, 0, 0, 0, 2, 3, 1]` ，文本为 `"GCACTGACTGACTGACTAG"`。算法开始的比较过程如下，先比较 `T[0]` 和 `P[0]`。
 
                               1       
                     0123456789012345678
@@ -100,7 +100,7 @@ extension String {
     pattern:        ACTGACTA
     patternIndex:   ^
                     x
-    suffixPrefix:   00000031
+    suffixPrefix:   00000231
 
 比较后发现不匹配，下一步比较 `T[1]` 和 `P[0]` ，不幸的是要检查模式串不一致，因此需要继续向右移动模式串，移动多少需要查询 `suffixPrefix[1 - 1]` 。如果值是 `0` ，需要再比较 `T[1]` 和 `P[0]` 。但还是不匹配，所以我们继续比较 `T[2]` 和 `P[0]`。 
 
@@ -110,7 +110,7 @@ extension String {
     textIndex:        ^
     pattern:          ACTGACTA
     patternIndex:     ^
-    suffixPrefix:     00000031
+    suffixPrefix:     00000231
 
 这次有相同的字符了，但也是至相同到第 `8` 位置，不幸的是匹配的长度与模式串长度并不相同，因此不能认为是相同的，但还是有办法的，我们可以用 `suffixPrefix` 数组存的值，匹配的长度是 `7`， 查看 `suffixPrefix[7-1]` 的值是 `3`。这个信息告诉我们 `P` 的前缀与 `T[0...8]` 的子字符串是有匹配。`suffixPrefix` 数组保证我们模式串有两个子字符串是与之匹配的，因此不用再进行比较，我们可以直接大幅向右移动模式串！
 
@@ -122,7 +122,7 @@ extension String {
     textIndex:               ^
     pattern:              ACTGACTA
     patternIndex:            ^
-    suffixPrefix:         00000031
+    suffixPrefix:         00000231
 
 继续比较直到第 13 位置，发现 `G` 和 `A` 不匹配。像上面那样，继续根据 `suffixPrefix` 数组进行右移。
 
