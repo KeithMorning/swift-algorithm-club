@@ -162,4 +162,6 @@ extension String {
 * [唐小喵的解释](https://www.cnblogs.com/tangzhengyue/p/4315393.html)
 * [孤~影的解释](http://www.cnblogs.com/yjiyjige/p/3263858.html)
 * [阮老师的解说](http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html)
+* [B站解释KMP-1](https://www.bilibili.com/video/av11866460?from=search&seid=17425875345653862171) （推荐新手先看）
+* [B站解释KMP-2](https://www.bilibili.com/video/av16828557/?spm_id_from=333.788.videocard.1)
 
