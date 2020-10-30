@@ -1,10 +1,5 @@
 //: Playground - noun: a place where people can play
 
-// last checked with Xcode 9.0b4
-#if swift(>=4.0)
-print("Hello, Swift 4!")
-#endif
-
 import Foundation
 
 // *** Simple but inefficient version of quicksort ***
@@ -42,12 +37,12 @@ func partitionLomuto<T: Comparable>(_ a: inout [T], low: Int, high: Int) -> Int 
   var i = low
   for j in low..<high {
     if a[j] <= pivot {
-      (a[i], a[j]) = (a[j], a[i])
+      a.swapAt(i, j)
       i += 1
     }
   }
 
-  (a[i], a[high]) = (a[high], a[i])
+  a.swapAt(i, high)
   return i
 }
 

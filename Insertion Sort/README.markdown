@@ -93,15 +93,15 @@
 
 ```swift
 func insertionSort(_ array: [Int]) -> [Int] {
-    var a = array			 // 1
-    for x in 1..<a.count {		 // 2
-        var y = x
-        while y > 0 && a[y] < a[y - 1] { // 3
-            a.swapAt(y - 1, y)
-            y -= 1
+    var sortedArray = array			 // 1
+    for index in 1..<sortedArray.count {		 // 2
+        var currentIndex = index
+        while currentIndex > 0 && sortedArray[currentIndex] < sortedArray[currentIndex - 1] { // 3
+            sortedArray.swapAt(currentIndex - 1, currentIndex)
+            currentIndex -= 1
         }
     }
-    return a
+    return sortedArray
 }
 
 
@@ -157,17 +157,17 @@ insertionSort(list)
 
 ```swift
 func insertionSort(_ array: [Int]) -> [Int] {
-  var a = array
-  for x in 1..<a.count {
-    var y = x
-    let temp = a[y]
-    while y > 0 && temp < a[y - 1] {
-      a[y] = a[y - 1]                // 1
-      y -= 1
+  var sortedArray = array
+  for index in 1..<sortedArray.count {
+    var currentIndex = index
+    let temp = sortedArray[currentIndex]
+    while currentIndex > 0 && temp < sortedArray[currentIndex - 1] {
+      sortedArray[currentIndex] = sortedArray[currentIndex - 1]                // 1
+      currentIndex -= 1
     }
-    a[y] = temp                      // 2
+    sortedArray[currentIndex] = temp                      // 2
   }
-  return a
+  return sortedArray
 }
 ```
 

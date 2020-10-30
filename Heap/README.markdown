@@ -29,7 +29,7 @@ As a result of this heap property, a max-heap always stores its largest item at 
 
 ## How does a heap compare to regular trees?
 
-A heap is not a replacement for a binary search tree, and there are similarities and differnces between them. Here are some main differences:
+A heap is not a replacement for a binary search tree, and there are similarities and differences between them. Here are some main differences:
 
 
 **Order of the nodes.** In a [binary search tree (BST)](../Binary%20Search%20Tree/), the left child must be smaller than its parent, and the right child must be greater. This is not true for a heap. In a max-heap both children must be smaller than the parent, while in a min-heap they both must be greater.
@@ -82,7 +82,7 @@ array[parent(i)] >= array[i]
 
 Verify that this heap property holds for the array from the example heap.
 
-As you can see, these equations allow us to find the parent or child index for any node without the need for pointers. It is complicated than just dereferencing a pointer, but that is the tradeoff: we save memory space but pay with extra computations. Fortunately, the computations are fast and only take **O(1)** time.
+As you can see, these equations allow us to find the parent or child index for any node without the need for pointers. It is more complicated than just dereferencing a pointer, but that is the tradeoff: we save memory space but pay with extra computations. Fortunately, the computations are fast and only take **O(1)** time.
 
 It is important to understand this relationship between array index and position in the tree. Here is a larger heap which has 15 nodes divided over four levels:
 
@@ -164,7 +164,7 @@ All of the above take time **O(log n)** because shifting up or down is expensive
 
 - `buildHeap(array)`: Converts an (unsorted) array into a heap by repeatedly calling `insert()`. If you are smart about this, it can be done in **O(n)** time.
 
-- [Heap sort](../Heap%20Sort/). Since the heap is an array, we can use its unique properties to sort the array from low to high. Time: **O(n lg n).**
+- [Heap sort](../Heap%20Sort/). Since the heap is an array, we can use its unique properties to sort the array from low to high. Time: **O(n log n).**
 
 The heap also has a `peek()` function that returns the maximum (max-heap) or minimum (min-heap) element, without removing it from the heap. Time: **O(1)**.
 

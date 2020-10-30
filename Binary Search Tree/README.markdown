@@ -567,7 +567,7 @@ if let node1 = tree.search(1) {
 你可以通过如下方法来判断二叉搜索树是否合法：
 
 ```swift
-  public func isBST(minValue minValue: T, maxValue: T) -> Bool {
+  public func isBST(minValue: T, maxValue: T) -> Bool {
     if value < minValue || value > maxValue { return false }
     let leftBST = left?.isBST(minValue: minValue, maxValue: value) ?? true
     let rightBST = right?.isBST(minValue: value, maxValue: maxValue) ?? true

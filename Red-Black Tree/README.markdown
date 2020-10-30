@@ -29,6 +29,7 @@ From [CLRS]
 ## Methods
 
 Nodes:
+* `nodeX.getPredecessor()` Returns the inorder predecessor of nodeX
 * `nodeX.getSuccessor()` Returns the inorder successor of nodeX
 * `nodeX.minimum()` Returns the node with the minimum key of the subtree of nodeX
 * `nodeX.maximum()` Returns the node with the maximum key of the subtree of nodeX
@@ -39,6 +40,9 @@ Tree:
 * `insert(key:)` Inserts the key value into the tree
 * `delete(key:)` Delete the node with the respective key value from the tree
 * `verify()` Verifies that the given tree fulfills the red-black tree properties
+* `count()` Returns how many nodes in the tree
+* `isEmpty()` Returns if the tree has no nodes
+* `allElements()` Returns an array containing all nodes (in-order traversal) in the tree.
 
 The rotation, insertion and deletion algorithms are implemented based on the pseudo-code provided in [CLRS]
 

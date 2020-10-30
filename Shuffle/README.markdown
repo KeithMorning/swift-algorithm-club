@@ -37,7 +37,7 @@ This code works just fine but it's not very efficient. Removing an element from 
 
 ## The Fisher-Yates / Knuth shuffle
 
-Here is a much improved version of the shuffle algorithm:
+Here is a much-improved version of the shuffle algorithm:
 
 ```swift
 extension Array {
@@ -52,7 +52,7 @@ extension Array {
 }
 ```
 
-Again, this picks objects at random. In the naive version we placed those objects into a new temporary array so we could keep track of which objects were already shuffled and which still remained to be done. In this improved algorithm, however, we'll move the shuffled objects to the end of the original array. 
+Again, this picks objects at random. In the naive version, we placed those objects into a new temporary array so we could keep track of which objects were already shuffled and which still remained to be done. In this improved algorithm, however, we'll move the shuffled objects to the end of the original array. 
 
 Let's walk through the example. We have the array:
 
@@ -96,9 +96,8 @@ public func shuffledArray(_ n: Int) -> [Int] {
   var a = [Int](repeating: 0, count: n)
   for i in 0..<n {
     let j = Int.random(in: 0...i)
-    if i != j {
-      a[i] = a[j]
-    }
+    // for the Fisher–Yates_shuffle's pseudo code implement in wiki, it will check if i != j
+    a[i] = a[j]
     a[j] = i
   }
   return a
@@ -115,7 +114,9 @@ This returns something like `[3, 0, 9, 1, 8, 5, 2, 6, 7, 4]`. As you can see, ev
 
 The `shuffledArray()` function first creates a new array with `n` zeros. Then it loops `n` times and in each step adds the next number from the sequence to a random position in the array. The trick is to make sure that none of these numbers gets overwritten with the next one, so it moves the previous number out of the way first!
 
-The algoritm is quite clever and I suggest you walk through an example yourself, either on paper or in the playground. (Hint: Again it splits the array into two regions.)
+For this function, `The condition that checks if j ≠ i may be omitted in languages that have no problems accessing uninitialized array values, and for which assigning is cheaper than comparing.`, you can check it in wiki. And also remove checking logic will optimise performance.
+
+The algorithm is quite clever and I suggest you walk through an example yourself, either on paper or in the playground. (Hint: Again it splits the array into two regions.)
 
 ## See also
 

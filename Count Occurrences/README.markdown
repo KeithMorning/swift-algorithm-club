@@ -21,10 +21,10 @@
 代码如下：
 
 ```swift
-func countOccurrencesOfKey(_ key: Int, inArray a: [Int]) -> Int {
-  func leftBoundary() -> Int {
+func countOccurrences<T: Comparable>(of key: T, in array: [T]) -> Int {
+  var leftBoundary: Int {
     var low = 0
-    var high = a.count
+    var high = array.count
     while low < high {
       let midIndex = low + (high - low)/2
       if a[midIndex] < key {
@@ -36,9 +36,9 @@ func countOccurrencesOfKey(_ key: Int, inArray a: [Int]) -> Int {
     return low
   }
 
-  func rightBoundary() -> Int {
+  var rightBoundary: Int {
     var low = 0
-    var high = a.count
+    var high = array.count
     while low < high {
       let midIndex = low + (high - low)/2
       if a[midIndex] > key {
@@ -50,18 +50,18 @@ func countOccurrencesOfKey(_ key: Int, inArray a: [Int]) -> Int {
     return low
   }
 
-  return rightBoundary() - leftBoundary()
+  return rightBoundary - leftBoundary
 }
 ```
 
-注意两个子函数 `lefBoundary()` 和 `rightBoundary()` 与 [二分查找](../Binary%20Search/) 非常类似，不同之处在于他们在查找到目标值后没有停下来，而是继续运行下去。
+注意两个子函数 `lefBoundary()` 和 `rightBoundary()` 与 [二分查找](../Binary%20Search/) 非常类似，不同之处在于他们在查找到目标值后没有停下来，而是继续运行下去。另外需要注意我们这里 `T` 有泛型约束，这样算法就可以适用于 Strings，Ints 或者其他 Swift 中符合 `Comparable` 的协议的类型。
 
 把下面代码复制到 playground 中运行一下：
 
 ```swift
 let a = [ 0, 1, 1, 3, 3, 3, 3, 6, 8, 10, 11, 11 ]
 
-countOccurrencesOfKey(3, inArray: a)  // returns 4
+countOccurrences(of: 3, in: a)  // returns 4
 ```
 
 > **记住:** 如果你要用自定义数组，需要使用已排序的数组。
@@ -111,7 +111,7 @@ countOccurrencesOfKey(3, inArray: a)  // returns 4
 
 每个二分查找需要 4 步，因此一共需要 8 步。对于只有 12 个元素的数组效果不是太明显，但是数组越大优势越明显。如果是一个1,000,000 大小已排序的数组，也只需要 2 * 20 = 40 步就能统计某个数字出现的概率。
 
-顺便起一下，如果你找的值不在数组中，`rightBoundary()` 和 `leftBoundary()`  会返回同样的值，因此他们之间的差为0。
+顺便提一下，如果你找的值不在数组中，`rightBoundary()` 和 `leftBoundary()`  会返回同样的值，因此他们之间的差为0。
 
 这是一个通过修改二分查找来解决其他算法问题的例子。不过，它的前提是数组是已排序的。
 
